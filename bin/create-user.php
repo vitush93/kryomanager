@@ -18,7 +18,7 @@ try {
 	$manager->add($name, $password);
 	echo "User $name was added.\n";
 
-} catch (App\Model\DuplicateNameException $e) {
+} catch (App\Model\DuplicateEmailException $e) {
 	echo "Error: duplicate name.\n";
 	exit(1);
 }
