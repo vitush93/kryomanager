@@ -1,0 +1,15 @@
+.idea/
+composer.lock
+log/*
+temp/*
+vendor/*
+!.gitignore
+!.htaccess
+!web.config
+app/config/config.local.neon
+bower_components/
+node_modules/
+master.js
+master.css
+master.css.map
+templates.js

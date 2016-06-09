@@ -1,0 +1,27 @@
+{
+  "name": "coool-cfg",
+  "version": "1.0.0",
+  "description": "Coool config manager",
+  "author": "Vit Habada",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "postinstall": "bower install"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-less": "~1.0.1",
+    "grunt-contrib-uglify": "~0.9.2",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-autoprefixer": "~3.0.3",
+    "grunt-browserify": "~4.0.1",
+    "time-grunt": "~1.2.1",
+    "grunt-sass": "~1.0",
+    "source-map": "~0.5.1",
+    "grunt-contrib-handlebars": "~1.0.0"
+  },
+  "dependencies": {
+    "handlebars": "^4.0.3",
+    "underscore": "^1.8.3"
+  }
+}

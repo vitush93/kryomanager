@@ -1,0 +1,37 @@
+body {
+  background: $bgcolor;
+}
+
+span.error-message {
+  color: #a94442;
+  font-size: 13px;
+  margin-top: 2px;
+  display: inline-block;
+}
+
+.panel-success .panel-heading a {
+  color: #3c763d;
+}
+
+ul.error {
+  display: block;
+  padding: 15px 30px;
+  margin: 0 0 20px;
+  background: #f2dede;
+  border-left: 3px solid #a94442;
+}
+
+ul.error li {
+  list-style-type: none;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  color: #a94442;
+}
+
+label {
+  font-weight: normal;
+}
+
+label.required {
+  font-weight: bold;
+}

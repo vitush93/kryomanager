@@ -1,0 +1,9 @@
+{
+  "name": "coool-cfg",
+  "devDependencies": {
+    "jquery": "~1.11",
+    "nette.ajax.js": "~2.1.0",
+    "bootstrap": "~3.3.6",
+    "font-awesome": "~4.6.3"
+  }
+}
