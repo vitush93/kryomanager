@@ -30,15 +30,15 @@
                     <table class="table">
                         <tr>
                             <th>Jméno:</th>
-                            <td>{$user->identity->jmeno}</td>
+                            <td>{$info->jmeno}</td>
                             <th>E-mail:</th>
-                            <td>{$user->identity->email}</td>
+                            <td>{$info->email}</td>
                         </tr>
                         <tr>
                             <th>Instituce:</th>
-                            <td>{$user->identity->instituce[nazev]}</td>
+                            <td>{$info->instituce->nazev}</td>
                             <th>Skupina:</th>
-                            <td>{$user->identity->skupina[nazev]}</td>
+                            <td>{$info->skupiny->nazev}</td>
                         </tr>
                     </table>
 

@@ -26,6 +26,7 @@ class HomepagePresenter extends BasePresenter
     function renderDefault()
     {
         $this->template->ceny = $this->orderManager->getPricelistForUser($this->user->id);
+        $this->template->info = $this->accFormFactory->getUser();
     }
 
     /**

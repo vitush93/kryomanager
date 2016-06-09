@@ -82,4 +82,12 @@ class AccFormFactory extends Object
             $form->addError('Uživatel s tímto e-mailem již existuje.');
         }
     }
+
+    /**
+     * @return bool|mixed|\Nette\Database\Table\IRow
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 }
