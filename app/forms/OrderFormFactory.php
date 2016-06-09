@@ -5,6 +5,7 @@ namespace App\Forms;
 
 
 use App\Model\OrderManager;
+use App\Model\UserManager;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 use Nette\Database\Context;
@@ -20,7 +21,7 @@ class OrderFormFactory extends Object
     /** @var OrderManager */
     private $orderManager;
 
-    /** @var User */
+    /** @var bool|mixed|\Nette\Database\Table\IRow */
     private $user;
 
     /**
@@ -33,7 +34,9 @@ class OrderFormFactory extends Object
     {
         $this->db = $context;
         $this->orderManager = $orderManager;
-        $this->user = $user;
+        $this->user = $context->table(UserManager::TABLE_USERS)
+            ->where('id', $user->id)
+            ->fetch();
     }
 
     /**
