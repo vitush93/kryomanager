@@ -19,7 +19,7 @@ class SignPresenter extends Presenter
     {
         parent::startup();
 
-        if ($this->user->isLoggedIn()) {
+        if ($this->user->isLoggedIn() && $this->action != 'out') {
             $this->redirect('Homepage:default');
         }
     }
@@ -66,6 +66,13 @@ class SignPresenter extends Presenter
         } catch (AuthenticationException $e) {
             $form->addError($e->getMessage());
         }
+    }
+
+    function actionOut()
+    {
+        $this->user->logout();
+
+        $this->redirect('default');
     }
 
 }
