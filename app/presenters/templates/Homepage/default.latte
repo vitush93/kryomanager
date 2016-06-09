@@ -11,6 +11,29 @@
             </div>
         </div>
         <div class="col-md-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">Uživatelský účet</div>
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <th>Jméno:</th>
+                            <td>{$user->identity->jmeno}</td>
+                            <th>E-mail:</th>
+                            <td>{$user->identity->email}</td>
+                        </tr>
+                        <tr>
+                            <th>Instituce:</th>
+                            <td>{$user->identity->instituce[nazev]}</td>
+                            <th>Skupina:</th>
+                            <td>{$user->identity->skupina[nazev]}</td>
+                        </tr>
+                    </table>
+
+                    <h4>Změna údajů</h4>
+                    {control accForm}
+                </div>
+            </div>
+
         </div>
     </div>
 {/block}

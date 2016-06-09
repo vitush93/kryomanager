@@ -26,4 +26,5 @@ services:
     - App\Model\InstitutionManager
     - App\Model\Settings
     - App\Model\OrderManager
+    - App\Forms\AccFormFactory
     router: App\RouterFactory::createRouter
