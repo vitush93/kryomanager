@@ -31,7 +31,7 @@ class RegisterFormFactory extends Object
         $this->institutionManager = $institutionManager;
     }
 
-    private function getInstitutionsPairs()
+    function getInstitutionsPairs()
     {
         $arr = [];
         foreach ($this->db->table(InstitutionManager::INSTITUTION_TABLE_NAME) as $instituce) {
@@ -51,23 +51,25 @@ class RegisterFormFactory extends Object
 
         $form->addText('email', 'E-mail')
             ->addRule(Form::EMAIL, 'Zadejte e-mail ve správném formátu.')
-            ->setRequired(BootstrapForm::REQUIRED_MSG);
+            ->setRequired(FORM_REQUIRED);
         $form->addText('jmeno', 'Jméno')
-            ->setRequired(BootstrapForm::REQUIRED_MSG);
+            ->setRequired(FORM_REQUIRED);
         $form->addPassword('heslo', 'Heslo')
             ->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků.', 6)
-            ->setRequired(BootstrapForm::REQUIRED_MSG);
+            ->setRequired(FORM_REQUIRED);
         $form->addPassword('heslo2', 'Heslo znovu')
             ->addRule(Form::EQUAL, 'Hesla se neshodují.', $form['heslo'])
-            ->setRequired(BootstrapForm::REQUIRED_MSG)
+            ->setRequired(FORM_REQUIRED)
             ->setOmitted();
-        $form->addSelect('skupina_instituce', 'Instituce a skupina', $this->getInstitutionsPairs());
+        $form->addSelect('skupina_instituce', 'Instituce a skupina', $this->getInstitutionsPairs())
+            ->setRequired(FORM_REQUIRED)
+            ->setPrompt('-vyberte-');
         $form->addSubmit('process', 'Registrovat');
 
         $form->onSuccess[] = function (Form $form, $values) use ($onSuccess) {
             $this->formSucceeded($form, $values);
 
-            if (!$form->hasErrors()) $onSuccess();
+            if (!$form->hasErrors() && $onSuccess) $onSuccess();
         };
 
         return BootstrapForm::makeBootstrap($form);
@@ -88,7 +90,7 @@ class RegisterFormFactory extends Object
 
                 $values->heslo = Passwords::hash($values->heslo);
 
-                $this->db->table(UserManager::TABLE_NAME)->insert($values);
+                $this->db->table(UserManager::TABLE_USERS)->insert($values);
             }
         } catch (UniqueConstraintViolationException $e) {
             $form->addError('Uživatel s tímto e-mailem již existuje.');

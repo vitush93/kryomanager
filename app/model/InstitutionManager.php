@@ -15,21 +15,28 @@ class InstitutionManager
 {
     const INSTITUTION_TABLE_NAME = 'instituce',
         GROUP_TABLE_NAME = 'skupiny';
-    
+
+    /** @var Context */
     private $db;
-    
+
+    /**
+     * InstitutionManager constructor.
+     * @param Context $context
+     */
     function __construct(Context $context)
     {
         $this->db = $context;
     }
 
-    function findInstitution($id) {
+    function findInstitution($id)
+    {
         return $this->db->table(self::INSTITUTION_TABLE_NAME)
             ->where('id', $id)
             ->fetch();
     }
-    
-    function findGroup($id) {
+
+    function findGroup($id)
+    {
         return $this->db->table(self::GROUP_TABLE_NAME)
             ->where('id', $id)
             ->fetch();

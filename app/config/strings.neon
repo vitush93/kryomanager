@@ -1,0 +1,2 @@
+constants:
+    FORM_REQUIRED: 'Toto pole je povinné.'

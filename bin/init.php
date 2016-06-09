@@ -32,8 +32,36 @@ $nastaveni = [
 ];
 
 $produkty = [
-    'Helium',
-    'Dusík'
+    1 => 'Helium',
+    2 => 'Dusík'
+];
+
+$ceny = [
+    // helium prices
+    1 => [
+        1 => [
+            'cena' => '450'
+        ],
+        2 => [
+            'cena' => '60'
+        ],
+        3 => [
+            'cena' => '60'
+        ]
+    ],
+
+    // nitrogen prices
+    2 => [
+        1 => [
+            'cena' => '20'
+        ],
+        2 => [
+            'cena' => '5'
+        ],
+        3 => [
+            'cena' => '5'
+        ]
+    ]
 ];
 
 $container = require __DIR__ . '/../app/bootstrap.php';
@@ -82,5 +110,16 @@ if ($db->table('produkty')->count() == 0) {
         $db->table('produkty')->insert([
             'nazev' => $p
         ]);
+    }
+}
+
+if ($db->table('ceny')->count() == 0) {
+    foreach ($ceny as $prod_id => $prices) {
+        foreach ($prices as $inst_id => $values) {
+            $values['instituce_id'] = $inst_id;
+            $values['produkty_id'] = $prod_id;
+
+            $db->table('ceny')->insert($values);
+        }
     }
 }

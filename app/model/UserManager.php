@@ -13,7 +13,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 {
 
     const
-        TABLE_NAME = 'uzivatele',
+        TABLE_USERS = 'uzivatele',
         COLUMN_ID = 'id',
         COLUMN_NAME = 'jmeno',
         COLUMN_PASSWORD_HASH = 'heslo',
@@ -38,6 +38,13 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
         $this->institutionManager = $institutionManager;
     }
 
+    function find($id)
+    {
+        return $this->database->table(self::TABLE_USERS)
+            ->where('id', $id)
+            ->fetch();
+    }
+
 
     /**
      * Performs an authentication.
@@ -48,7 +55,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
     {
         list($username, $password) = $credentials;
 
-        $row = $this->database->table(self::TABLE_NAME)->where(self::COLUMN_EMAIL, $username)->fetch();
+        $row = $this->database->table(self::TABLE_USERS)->where(self::COLUMN_EMAIL, $username)->fetch();
 
         if (!$row) {
             throw new Nette\Security\AuthenticationException('Uživatel s tímto e-mailem neexistuje.', self::IDENTITY_NOT_FOUND);
@@ -85,7 +92,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
     public function add($email, $password, $name)
     {
         try {
-            $this->database->table(self::TABLE_NAME)->insert([
+            $this->database->table(self::TABLE_USERS)->insert([
                 self::COLUMN_NAME => $name,
                 self::COLUMN_PASSWORD_HASH => Passwords::hash($password),
                 self::COLUMN_EMAIL => $email,
@@ -98,6 +105,6 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 }
 
 
-
 class DuplicateEmailException extends \Exception
-{}
+{
+}
