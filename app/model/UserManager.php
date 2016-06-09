@@ -24,10 +24,18 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
     /** @var Nette\Database\Context */
     private $database;
 
+    /** @var InstitutionManager */
+    private $institutionManager;
 
-    public function __construct(Nette\Database\Context $database)
+    /**
+     * UserManager constructor.
+     * @param Nette\Database\Context $database
+     * @param InstitutionManager $institutionManager
+     */
+    public function __construct(Nette\Database\Context $database, InstitutionManager $institutionManager)
     {
         $this->database = $database;
+        $this->institutionManager = $institutionManager;
     }
 
 
@@ -55,6 +63,12 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
         }
 
         $arr = $row->toArray();
+        $skupina = $this->institutionManager->findGroup($arr['skupiny_id'])->toArray();
+        $instituce = $this->institutionManager->findInstitution($arr['instituce_id'])->toArray();
+
+        $arr['skupina'] = $skupina;
+        $arr['instituce'] = $instituce;
+
         unset($arr[self::COLUMN_PASSWORD_HASH]);
         return new Nette\Security\Identity($row[self::COLUMN_ID], $row[self::COLUMN_ROLE], $arr);
     }

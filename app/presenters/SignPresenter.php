@@ -44,6 +44,8 @@ class SignPresenter extends Presenter
             ->setRequired();
         $form->addPassword('password', 'Heslo')
             ->setRequired();
+        $form->addCheckbox('remember', 'Zapamatovat')
+            ->setDefaultValue(true);
         $form->addSubmit('process', 'Přihlásit');
 
         $form->onSuccess[] = $this->loginFormSucceeded;
@@ -58,7 +60,12 @@ class SignPresenter extends Presenter
     function loginFormSucceeded(Form $form, $values)
     {
         try {
-            $this->user->setExpiration('20 minutes');
+            if ($values->remember) {
+                $this->user->setExpiration('14 days');
+            } else {
+                $this->user->setExpiration('20 minutes');
+            }
+
             $this->user->login($values->email, $values->password);
 
             $this->flashMessage('Byl jste úspěšně přihlášen', 'info');
