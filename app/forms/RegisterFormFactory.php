@@ -45,7 +45,7 @@ class RegisterFormFactory extends Object
         return $arr;
     }
 
-    function create(callable $onSuccess)
+    function create(callable $onSuccess = null)
     {
         $form = new Form();
 

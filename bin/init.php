@@ -31,35 +31,56 @@ $nastaveni = [
     'dph.druha_snizena' => '10'
 ];
 
+$produkty = [
+    'Helium',
+    'Dusík'
+];
+
 $container = require __DIR__ . '/../app/bootstrap.php';
 
 /** @var \Nette\Database\Context $db */
 $db = $container->getByType('Nette\Database\Context');
 
-foreach ($instituce as $key => $item) {
-    $db->table('instituce')->insert([
-        'nazev' => $item
-    ]);
-}
-
-foreach (array_keys($skupiny) as $inst) {
-    foreach ($skupiny[$inst] as $sk) {
-        $db->table('skupiny')->insert([
-            'instituce_id' => $inst,
-            'nazev' => $sk
+if ($db->table('instituce')->count() == 0) {
+    foreach ($instituce as $key => $item) {
+        $db->table('instituce')->insert([
+            'nazev' => $item
         ]);
     }
 }
 
-foreach ($objednavky_stav as $key => $value) {
-    $db->table('objednavky_stav')->insert([
-        'nazev' => $value
-    ]);
+if ($db->table('skupiny')->count() == 0) {
+    foreach (array_keys($skupiny) as $inst) {
+        foreach ($skupiny[$inst] as $sk) {
+            $db->table('skupiny')->insert([
+                'instituce_id' => $inst,
+                'nazev' => $sk
+            ]);
+        }
+    }
 }
 
-foreach ($nastaveni as $key => $value) {
-    $db->table('nastaveni')->insert([
-        'key' => $key,
-        'value' => $value
-    ]);
+if ($db->table('objednavky_stav')->count() == 0) {
+    foreach ($objednavky_stav as $key => $value) {
+        $db->table('objednavky_stav')->insert([
+            'nazev' => $value
+        ]);
+    }
+}
+
+if ($db->table('nastaveni')->count() == 0) {
+    foreach ($nastaveni as $key => $value) {
+        $db->table('nastaveni')->insert([
+            'key' => $key,
+            'value' => $value
+        ]);
+    }
+}
+
+if ($db->table('produkty')->count() == 0) {
+    foreach ($produkty as $p) {
+        $db->table('produkty')->insert([
+            'nazev' => $p
+        ]);
+    }
 }
