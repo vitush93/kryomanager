@@ -113,9 +113,18 @@ class OrderManager extends Object
      */
     function getPendingOrdersForUser($user_id)
     {
-        return $this->getOrders()
-            ->where('uzivatele_id', $user_id)
+        return $this->getOrdersForUser($user_id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING);
+    }
+
+    /**
+     * @param $user_id
+     * @return Selection
+     */
+    function getOrdersForUser($user_id)
+    {
+        return $this->getOrders()
+            ->where('uzivatele_id', $user_id);
     }
 
     /**

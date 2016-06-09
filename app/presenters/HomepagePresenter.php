@@ -10,6 +10,7 @@ use Grido\Components\Filters\Filter;
 use Grido\Grid;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\Selection;
 use Nette\Security\Passwords;
 
 class HomepagePresenter extends BasePresenter
@@ -49,30 +50,61 @@ class HomepagePresenter extends BasePresenter
         $this->redirect('default');
     }
 
+    /**
+     * @return Grid
+     */
+    protected function createComponentOrders()
+    {
+        $grid = new Grid();
+        $grid->setModel($this->orderManager->getOrdersForUser($this->user->id));
+        $grid->getTranslator()->setLang('cs');
+        $grid->setDefaultPerPage(50);
+
+        $this->setupOrdersGrid($grid);
+        $grid->addColumnText('stav', 'Stav')->setSortable();
+
+        $grid->setFilterRenderType(Filter::RENDER_INNER);
+
+        $grid->addFilterSelect('stav', '', [
+            '' => '',
+            'pending' => 'nevyřízená',
+            'cancelled' => 'stornovaná',
+            'completed' => 'vyřízená'
+        ])->setCondition([
+            'pending' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_PENDING],
+            'cancelled' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_CANCELLED],
+            'completed' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_COMPLETED]
+        ]);
+
+        $grid->addFilterSelect('produkt', '', [
+            '' => '',
+            1 => 'Helium',
+            2 => 'Dusík'
+        ])->setCondition([
+            1 => ['objednavky.produkty_id', '= ?', 1],
+            2 => ['objednavky.produkty_id', '= ?', 2]
+        ]);
+
+        $grid->addFilterDate('created', '')
+            ->setWhere(function ($val, Selection $selection) {
+                $date = new \DateTime($val);
+                $selection->where('DATE(objednavky.created) = DATE(?)', $date);
+            });
+
+        return $grid;
+    }
+
+    /**
+     * @return Grid
+     * @throws \Grido\Exception
+     */
     protected function createComponentPendingOrders()
     {
         $grid = new Grid();
         $grid->setModel($this->orderManager->getPendingOrdersForUser($this->user->id));
         $grid->getTranslator()->setLang('cs');
 
-        $grid->addColumnDate('created', 'Datum')->setSortable();
-        $grid->addColumnText('produkt', 'Kryokapalina')->setSortable();
-        $grid->addColumnNumber('objem', 'Objem')->setCustomRender(function ($item) {
-            return $item->objem . ' litrů';
-        })->setSortable();
-        $grid->addColumnNumber('cena', 'Cena za litr')->setCustomRender(function ($item) {
-            return $item->cena . ' Kč';
-        })->setSortable();
-        $grid->addColumnNumber('cena_celkem', 'Cena celkem')
-            ->setCustomRender(function ($item) {
-                return $item->cena_celkem . ' Kč';
-            })->setSortable();
-        $grid->addColumnNumber('dph', 'DPH')->setCustomRender(function ($item) {
-            return $item->dph . ' %';
-        })->setSortable();
-        $grid->addColumnNumber('cena_celkem_dph', 'Cena celkem s DPH')->setCustomRender(function ($item) {
-            return $item->cena_celkem_dph . ' Kč';
-        })->setSortable();
+        $this->setupOrdersGrid($grid);
 
         $grid->setFilterRenderType(Filter::RENDER_INNER);
 
@@ -81,6 +113,28 @@ class HomepagePresenter extends BasePresenter
             ->setIcon('remove');
 
         return $grid;
+    }
+
+    private function setupOrdersGrid(Grid $grid)
+    {
+        $grid->addColumnDate('created', 'Datum')->setSortable();
+        $grid->addColumnText('produkt', 'Kryokapalina');
+        $grid->addColumnNumber('objem', 'Objem')->setCustomRender(function ($item) {
+            return $item->objem . ' litrů';
+        })->setSortable();
+        $grid->addColumnNumber('cena', 'Cena za litr')->setCustomRender(function ($item) {
+            return $item->cena . ' Kč';
+        });
+        $grid->addColumnNumber('cena_celkem', 'Cena celkem')
+            ->setCustomRender(function ($item) {
+                return $item->cena_celkem . ' Kč';
+            })->setSortable();
+        $grid->addColumnNumber('dph', 'DPH')->setCustomRender(function ($item) {
+            return $item->dph . ' %';
+        });
+        $grid->addColumnNumber('cena_celkem_dph', 'Cena celkem s DPH')->setCustomRender(function ($item) {
+            return $item->cena_celkem_dph . ' Kč';
+        })->setSortable();
     }
 
     /**
