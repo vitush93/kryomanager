@@ -4,6 +4,9 @@
     "jquery": "~1.11",
     "nette.ajax.js": "~2.1.0",
     "bootstrap": "~3.3.6",
-    "font-awesome": "~4.6.3"
+    "font-awesome": "~4.6.3",
+    "bootstrap-daterangepicker": "~2.1.21",
+    "typeahead.js": "~0.11.1",
+    "history.js": "~1.8.0"
   }
 }

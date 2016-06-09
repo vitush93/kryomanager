@@ -4,6 +4,7 @@ namespace App\Model;
 
 
 use Nette\Database\Context;
+use Nette\Database\Table\Selection;
 use Nette\Object;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
@@ -12,6 +13,10 @@ class OrderManager extends Object
 {
     const TABLE_ORDERS = 'objednavky';
     const TABLE_PRICES = 'ceny';
+
+    const ORDER_STATUS_PENDING = 1,
+        ORDER_STATUS_CANCELLED = 2,
+        ORDER_STATUS_COMPLETED = 3;
 
     /** @var Context */
     private $db;
@@ -44,6 +49,76 @@ class OrderManager extends Object
     }
 
     /**
+     * @param $id
+     * @return Selection
+     */
+    private function order($id)
+    {
+        return $this->db->table(self::TABLE_ORDERS)
+            ->where('id', $id);
+    }
+
+    /**
+     * @param int $id
+     */
+    function cancelPendingOrder($id)
+    {
+        $this->order($id)
+            ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING)
+            ->update(['objednavky_stav_id' => self::ORDER_STATUS_CANCELLED]);
+    }
+
+    /**
+     * Check if order belongs to a user.
+     *
+     * @param int $user_id
+     * @param int $order_id
+     * @return bool
+     */
+    function hasOrder($user_id, $order_id)
+    {
+        $order = $this->order($order_id)
+            ->where('uzivatele_id', $user_id)
+            ->fetch();
+
+        return $order !== false;
+    }
+
+    /**
+     * @return Selection
+     */
+    function getOrders()
+    {
+        return $this->db->table(self::TABLE_ORDERS)
+            ->select('
+            objednavky.id AS id,
+            objednavky.created AS created, 
+            objednavky.objem AS objem, 
+            objednavky.objem_vraceno AS objem_vraceno, 
+            objednavky.jmeno AS jmeno, 
+            objednavky.dph AS dph,
+            ceny.cena AS cena,
+            (cena * objem) AS cena_celkem,
+            (cena * objem + cena * objem * objednavky.dph/100) AS cena_celkem_dph,
+            produkty.nazev AS produkt,
+            uzivatele.email AS email,
+            skupiny.nazev AS skupina,
+            instituce.nazev AS intituce,
+            objednavky_stav.nazev AS stav');
+    }
+
+    /**
+     * @param $user_id
+     * @return Selection
+     */
+    function getPendingOrdersForUser($user_id)
+    {
+        return $this->getOrders()
+            ->where('uzivatele_id', $user_id)
+            ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING);
+    }
+
+    /**
      * @param int $user_id
      * @return array|\Nette\Database\Table\IRow[]
      */
@@ -60,7 +135,7 @@ class OrderManager extends Object
     }
 
     /**
-     * @param int $product_id 
+     * @param int $product_id
      * @param float $volume amount of kryoliquid
      * @param int $user_id
      */
