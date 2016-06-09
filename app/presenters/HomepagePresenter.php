@@ -59,6 +59,7 @@ class HomepagePresenter extends BasePresenter
         $grid->setModel($this->orderManager->getOrdersForUser($this->user->id));
         $grid->getTranslator()->setLang('cs');
         $grid->setDefaultPerPage(50);
+        $grid->setExport('objednavky');
 
         $this->setupOrdersGrid($grid);
         $grid->addColumnText('stav', 'Stav')->setSortable();
