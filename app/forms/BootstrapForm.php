@@ -5,6 +5,7 @@ namespace Libs;
 
 class BootstrapForm
 {
+    const REQUIRED_MSG = 'Toto pole je povinné.';
 
     /**
      * @param \Nette\Application\UI\Form $form

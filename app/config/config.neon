@@ -21,4 +21,6 @@ session:
 
 services:
     - App\Model\UserManager
+    - App\Forms\RegisterFormFactory
+    - App\Model\InstitutionManager
     router: App\RouterFactory::createRouter
