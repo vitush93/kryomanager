@@ -3,6 +3,19 @@
 {block content}
     <div class="row">
         <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Ceník</div>
+                <div class="panel-body">
+                    <table class="table">
+                        {foreach $ceny as $c}
+                            <tr>
+                                <th>{$c->produkty->nazev}</th>
+                                <td>{$c->cena},- Kč</td>
+                            </tr>
+                        {/foreach}
+                    </table>
+                </div>
+            </div>
             <div class="panel panel-success">
                 <div class="panel-heading">Nová objednávka</div>
                 <div class="panel-body">

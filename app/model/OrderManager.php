@@ -44,6 +44,22 @@ class OrderManager extends Object
     }
 
     /**
+     * @param int $user_id
+     * @return array|\Nette\Database\Table\IRow[]
+     */
+    function getPricelistForUser($user_id)
+    {
+        $user = $this->userManager->find($user_id);
+        $now = new DateTime();
+
+        return $this->db->table(OrderManager::TABLE_PRICES)
+            ->where('instituce_id', $user->instituce_id)
+            ->where('platna_od <= ?', $now)
+            ->where('platna_do >= ? OR platna_do IS NULL', $now)
+            ->fetchAll();
+    }
+
+    /**
      * @param int $product_id 
      * @param float $volume amount of kryoliquid
      * @param int $user_id

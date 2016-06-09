@@ -5,6 +5,7 @@ namespace App\Presenters;
 
 use App\Forms\AccFormFactory;
 use App\Forms\OrderFormFactory;
+use App\Model\OrderManager;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 use Nette\Security\Passwords;
@@ -16,6 +17,14 @@ class HomepagePresenter extends BasePresenter
 
     /** @var AccFormFactory @inject */
     public $accFormFactory;
+
+    /** @var OrderManager @inject */
+    public $orderManager;
+
+    function renderDefault()
+    {
+        $this->template->ceny = $this->orderManager->getPricelistForUser($this->user->id);
+    }
 
     /**
      * @return Form
