@@ -1,5 +1,19 @@
 <?php
 
+$container = require __DIR__ . '/../app/bootstrap.php';
+
+/** @var \Nette\Database\Context $db */
+$db = $container->getByType('Nette\Database\Context');
+
+$admin = [
+    'instituce_id' => 1,
+    'skupiny_id' => 1,
+    'email' => 'admin@example.com',
+    'heslo' => \Nette\Security\Passwords::hash('admin123'),
+    'jmeno' => 'Admin',
+    'role' => 'admin'
+];
+
 $instituce = [
     1 => 'Externí',
     2 => 'MFF UK',
@@ -7,6 +21,9 @@ $instituce = [
 ];
 
 $skupiny = [
+    1 => [
+        'Externí'
+    ],
     2 => [
         'KFNT',
         'KFKL',
@@ -64,11 +81,6 @@ $ceny = [
     ]
 ];
 
-$container = require __DIR__ . '/../app/bootstrap.php';
-
-/** @var \Nette\Database\Context $db */
-$db = $container->getByType('Nette\Database\Context');
-
 if ($db->table('instituce')->count() == 0) {
     foreach ($instituce as $key => $item) {
         $db->table('instituce')->insert([
@@ -122,4 +134,9 @@ if ($db->table('ceny')->count() == 0) {
             $db->table('ceny')->insert($values);
         }
     }
+}
+
+$checkAdmin = $db->table('uzivatele')->where('email', $admin['email'])->fetch();
+if (!$checkAdmin) {
+    $db->table('uzivatele')->insert($admin);
 }
