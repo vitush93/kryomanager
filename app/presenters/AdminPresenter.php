@@ -98,9 +98,13 @@ class AdminPresenter extends BasePresenter
             ->fetch()
             ->helium;
 
-        $this->template->pending = $this->orderManager->getPendingOrders()
+        $this->template->pending = $this->orderManager->getOrders()
+            ->where('objednavky_stav_id IN (?)', [
+                OrderManager::ORDER_STATUS_PENDING,
+                OrderManager::ORDER_STATUS_CANCELLED
+            ])
             ->order('created DESC')
-            ->limit(7);
+            ->limit(10);
     }
 
     /**

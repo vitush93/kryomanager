@@ -105,7 +105,7 @@
                             <th>Akce</th>
                         </tr>
                         {foreach $pending as $o}
-                            <tr>
+                            <tr {if $o->stav_id == 2}class="order-cancelled"{/if}>
                                 <td>#{$o->id}</td>
                                 <td>{$o->created|date:'j.n.Y H:i'}</td>
                                 <td>{$o->produkt}</td>
@@ -114,11 +114,13 @@
                                 <td class="visible-lg">{$o->skupina}</td>
                                 <td>{$o->jmeno}</td>
                                 <td>
+                                    {if $o->stav_id != 2}
                                     <a href="{link complete $o->id}" onclick="return confirm('Vyřídit objednávku?')"
                                        title="vyřídit"><i class="fa fa-check"></i></a>
                                     &nbsp;
                                     <a href="{link cancel $o->id}" onclick="return confirm('Stornovat objednávku?')"
                                        title="stornovat"><i class="fa fa-times"></i></a>
+                                    {/if}
                                 </td>
                             </tr>
                         {/foreach}

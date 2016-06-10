@@ -137,6 +137,7 @@ class OrderManager extends Object
             objednavky.objem_vraceno AS objem_vraceno, 
             objednavky.jmeno AS jmeno, 
             objednavky.dph AS dph,
+            objednavky.objednavky_stav_id AS stav_id,
             ceny.cena AS cena,
             (cena * objem) AS cena_celkem,
             (cena * objem + cena * objem * objednavky.dph/100) AS cena_celkem_dph,
