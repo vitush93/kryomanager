@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 
+use App\Controls\IOrdersGridControlFactory;
 use App\Model\OrderManager;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
@@ -11,6 +12,9 @@ class AdminPresenter extends BasePresenter
 {
     /** @var OrderManager @inject */
     public $orderManager;
+
+    /** @var IOrdersGridControlFactory @inject */
+    public $ordersGridControlFactory;
 
     /**
      * Mark order as done.
@@ -105,6 +109,18 @@ class AdminPresenter extends BasePresenter
             ])
             ->order('created DESC')
             ->limit(10);
+    }
+
+    /**
+     * @return \App\Controls\OrdersGridControl
+     */
+    protected function createComponentOrdersGrid()
+    {
+        $grid = $this->ordersGridControlFactory->create();
+
+        $grid->setModel($this->orderManager->getOrders());
+
+        return $grid;
     }
 
     /**

@@ -27,4 +27,5 @@ services:
     - App\Model\Settings
     - App\Model\OrderManager
     - App\Forms\AccFormFactory
+    - App\Controls\IOrdersGridControlFactory
     router: App\RouterFactory::createRouter
