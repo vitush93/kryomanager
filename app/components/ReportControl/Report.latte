@@ -1,0 +1,20 @@
+<div class="col-sm-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">Roční report</div>
+        <div class="panel-body">
+            <table class="table">
+                {foreach $report as $r}
+                    <tr>
+                        <th>{$r->produkt}</th>
+                        <th class="al-right">Objem celkem:</th>
+                        <td>{$r->volume} l</td>
+                        <th>Cena celkem:</th>
+                        <td class="al-right">{$r->cost|number:2:',':' '} Kč</td>
+                        <th>Cena celkem s DPH:</th>
+                        <td class="al-right">{$r->cost_dph|number:2:',':' '} Kč</td>
+                    </tr>
+                {/foreach}
+            </table>
+        </div>
+    </div>
+</div>

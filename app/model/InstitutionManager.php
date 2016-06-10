@@ -41,4 +41,18 @@ class InstitutionManager
             ->where('id', $id)
             ->fetch();
     }
+
+    function groupPairs()
+    {
+        return $this->db->table(self::GROUP_TABLE_NAME)
+            ->order('nazev ASC')
+            ->fetchPairs('id', 'nazev');
+    }
+
+    function institutionPairs()
+    {
+        return $this->db->table(self::INSTITUTION_TABLE_NAME)
+            ->order('nazev ASC')
+            ->fetchPairs('id', 'nazev');
+    }
 }
