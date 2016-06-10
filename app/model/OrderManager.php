@@ -19,6 +19,9 @@ class OrderManager extends Object
         ORDER_STATUS_COMPLETED = 3,
         ORDER_STATUS_DONE = 4;
 
+    const PRODUCT_HELIUM = 1,
+        PRODUCT_NITROGEN = 2;
+
     /** @var Context */
     private $db;
 
@@ -62,10 +65,11 @@ class OrderManager extends Object
     /**
      * @param int $id
      * @param float|int $returned_volume
+     * @return int
      */
     function finishCompletedOrder($id, $returned_volume = 0)
     {
-        $this->order($id)
+        return $this->order($id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_COMPLETED)
             ->update([
                 'objednavky_stav_id' => self::ORDER_STATUS_DONE,
@@ -75,20 +79,22 @@ class OrderManager extends Object
 
     /**
      * @param int $id
+     * @return int
      */
     function completePendingOrder($id)
     {
-        $this->order($id)
+        return $this->order($id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING)
             ->update(['objednavky_stav_id' => self::ORDER_STATUS_COMPLETED]);
     }
 
     /**
      * @param int $id
+     * @return int
      */
     function cancelPendingOrder($id)
     {
-        $this->order($id)
+        return $this->order($id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING)
             ->update(['objednavky_stav_id' => self::ORDER_STATUS_CANCELLED]);
     }
@@ -112,6 +118,15 @@ class OrderManager extends Object
     /**
      * @return Selection
      */
+    function countOrders()
+    {
+        return $this->db->table(self::TABLE_ORDERS)
+            ->select('COUNT(id) AS count');
+    }
+
+    /**
+     * @return Selection
+     */
     function getOrders()
     {
         return $this->db->table(self::TABLE_ORDERS)
@@ -128,7 +143,7 @@ class OrderManager extends Object
             produkty.nazev AS produkt,
             uzivatele.email AS email,
             skupiny.nazev AS skupina,
-            instituce.nazev AS intituce,
+            instituce.nazev AS instituce,
             objednavky_stav.nazev AS stav');
     }
 
@@ -175,6 +190,14 @@ class OrderManager extends Object
             ->where('platna_od <= ?', $now)
             ->where('platna_do >= ? OR platna_do IS NULL', $now)
             ->fetchAll();
+    }
+
+    /**
+     * @return Selection
+     */
+    function allOrders()
+    {
+        return $this->db->table(self::TABLE_ORDERS);
     }
 
     /**

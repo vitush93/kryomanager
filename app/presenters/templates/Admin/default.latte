@@ -1,34 +1,117 @@
 {block content}
     <div class="row">
-        <div class="col-lg-4 col-md-6">
-            <div class="panel panel-success">
-                <div class="panel-heading">Rychle dokončit objednávku</div>
-                <div class="panel-body">
-                    {control doneOrderForm}
+        <div class="col-md-3 col-sm-6">
+            <div class="panel panel-primary widget">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <div class="widget-icon">N</div>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{$nitrogen|number:0:',':' '}</div>
+                            <div>litrů / měsíc</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4 col-md-6">
-            <div class="panel panel-success">
-                <div class="panel-heading">Rychle vyřídit objednávku</div>
-                <div class="panel-body">
-                    {control completeOrderForm}
+        <div class="col-md-3 col-sm-6">
+            <div class="panel panel-green widget">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <div class="widget-icon">He</div>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{$helium|number:0:',':' '}</div>
+                            <div>litrů / měsíc</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-4 col-md-6">
+        <div class="col-md-3 col-sm-6">
+            <div class="panel panel-yellow widget">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-shopping-cart fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{$ordersCount}</div>
+                            <div>objednávek / měsíc</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="panel panel-red widget">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-cart-arrow-down fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{$cancelsCount}</div>
+                            <div>storno / měsíc</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-6">
+
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-6 col-xs-12">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Rychle dokončit objednávku</div>
+                        <div class="panel-body">
+                            {control doneOrderForm}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-6 col-xs-12">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Rychle vyřídit objednávku</div>
+                        <div class="panel-body">
+                            {control completeOrderForm}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9 col-md-6">
             <div class="panel panel-info">
                 <div class="panel-heading">Nové objednávky</div>
                 <div class="panel-body">
-                    <table class="table">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Číslo obj.</th>
+                            <th>Datum</th>
+                            <th>Kryokapalina</th>
+                            <th>Objem</th>
+                            <th>Instituce</th>
+                            <th>Skupina</th>
+                            <th>Jméno</th>
+                            <th>Akce</th>
+                        </tr>
                         {foreach $pending as $o}
                             <tr>
                                 <td>#{$o->id}</td>
                                 <td>{$o->created|date:'j.n.Y H:i'}</td>
                                 <td>{$o->produkt}</td>
                                 <td>{$o->objem} l</td>
+                                <td>{$o->instituce}</td>
+                                <td>{$o->skupina}</td>
+                                <td>{$o->jmeno}</td>
                                 <td>
                                     <a href="{link complete $o->id}" onclick="return confirm('Vyřídit objednávku?')"
                                        title="vyřídit"><i class="fa fa-check"></i></a>
@@ -41,6 +124,8 @@
                     </table>
                     {if $pending->count() == 0}
                         <p>Žádné nové nevyřízené objednávky.</p>
+                    {else}
+                        <p><a href="{link Admin:orders}">Všechny objednávky</a></p>
                     {/if}
                 </div>
             </div>

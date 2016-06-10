@@ -20,10 +20,15 @@ class AdminPresenter extends BasePresenter
      */
     function actionFinish($id, $volume = null)
     {
-        $this->orderManager->finishCompletedOrder($id, $volume ? $volume : 0);
+        $affected = $this->orderManager->finishCompletedOrder($id, $volume ? $volume : 0);
 
         if (!$this->isAjax()) {
-            $this->flashMessage('Objednávka byla dokončena.', 'success');
+            if ($affected == 0) {
+                $this->flashMessage("Objednávka č. $id neexistuje nebo nebyla označena jako vyřízená.", 'danger');
+            } else {
+                $this->flashMessage('Objednávka byla dokončena.', 'success');
+            }
+
             $this->redirect('default');
         }
     }
@@ -35,10 +40,15 @@ class AdminPresenter extends BasePresenter
      */
     function actionComplete($id)
     {
-        $this->orderManager->completePendingOrder($id);
+        $affected = $this->orderManager->completePendingOrder($id);
 
         if (!$this->isAjax()) {
-            $this->flashMessage('Objednávka byla vyřízena.', 'success');
+            if ($affected == 0) {
+                $this->flashMessage("Objednávka č. $id neexistuje nebo nebyla označena jako nevyřízená.", 'danger');
+            } else {
+                $this->flashMessage('Objednávka byla vyřízena.', 'success');
+            }
+
             $this->redirect('default');
         }
     }
@@ -60,9 +70,37 @@ class AdminPresenter extends BasePresenter
 
     function renderDefault()
     {
+        $ordersThisMonth = $this->orderManager->countOrders()
+            ->where('MONTH(created) = MONTH(NOW())')
+            ->where('YEAR(created) = YEAR(NOW())');
+
+        $this->template->ordersCount = $ordersThisMonth->fetch()->count;
+        $this->template->cancelsCount = $ordersThisMonth
+            ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_CANCELLED)
+            ->fetch()
+            ->count;
+
+        $this->template->nitrogen = $this->orderManager->allOrders()
+            ->select('SUM(objem) AS nitrogen')
+            ->where('MONTH(created) = MONTH(NOW())')
+            ->where('YEAR(created) = YEAR(NOW())')
+            ->where('produkty_id', OrderManager::PRODUCT_NITROGEN)
+            ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_DONE)
+            ->fetch()
+            ->nitrogen;
+
+        $this->template->helium = $this->orderManager->allOrders()
+            ->select('SUM(objem) AS helium')
+            ->where('MONTH(created) = MONTH(NOW())')
+            ->where('YEAR(created) = YEAR(NOW())')
+            ->where('produkty_id', OrderManager::PRODUCT_HELIUM)
+            ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_DONE)
+            ->fetch()
+            ->helium;
+
         $this->template->pending = $this->orderManager->getPendingOrders()
-            ->order('id DESC')
-            ->limit(10);
+            ->order('created DESC')
+            ->limit(7);
     }
 
     /**
@@ -72,7 +110,7 @@ class AdminPresenter extends BasePresenter
     {
         $form = new Form();
 
-        $form->addText('obj_id', 'Číslo objednávky')
+        $form->addText('obj_id', '#')
             ->addRule(Form::INTEGER, 'Zadejte celé číslo.')
             ->setRequired(FORM_REQUIRED);
         $form->addSubmit('process', 'Vyřídit');
@@ -91,10 +129,10 @@ class AdminPresenter extends BasePresenter
     {
         $form = new Form();
 
-        $form->addText('obj_id', 'Číslo objednávky')
+        $form->addText('obj_id', '#')
             ->addRule(Form::INTEGER, 'Zadejte celé číslo.')
             ->setRequired(FORM_REQUIRED);
-        $form->addText('returned', 'Vracený objem')
+        $form->addText('returned', 'Vráceno')
             ->addRule(Form::FLOAT, 'Zadejte číslo.')
             ->setRequired(FORM_REQUIRED)
             ->setDefaultValue(0);
