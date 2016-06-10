@@ -59,6 +59,7 @@ class ReportingPresenter extends BasePresenter
         $form->onSuccess[] = function (Form $form, $values) {
             $orders = $this->orderManager->allOrders()
                 ->where('objednavky.skupiny_id', $values->skupina)
+                ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_FINISHED)
                 ->where('YEAR(objednavky.created) = ?', $values->rok);
 
             $this['report']->setOrders($orders);
@@ -84,6 +85,7 @@ class ReportingPresenter extends BasePresenter
         $form->onSuccess[] = function (Form $form, $values) {
             $orders = $this->orderManager->allOrders()
                 ->where('objednavky.instituce_id', $values->instituce)
+                ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_FINISHED)
                 ->where('YEAR(objednavky.created) = ?', $values->rok);
 
             $this['report']->setOrders($orders);
