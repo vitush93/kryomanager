@@ -5,6 +5,7 @@ namespace App\Model;
 
 use Nette\Database\Context;
 use Nette\Database\Table\Selection;
+use Nette\InvalidArgumentException;
 use Nette\Object;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
@@ -79,6 +80,9 @@ class OrderManager extends Object
      */
     function finishOrder($id, $returned_volume = 0)
     {
+        $objem = $this->order($id)->fetch()->objem;
+        if ($objem < $returned_volume) throw new InvalidArgumentException('Vrácený objem nemůže být větší než objem v objednávce.');
+
         return $this->order($id)
             ->where('objednavky_stav_id IN (?)', [
                 self::ORDER_STATUS_COMPLETED,

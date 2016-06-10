@@ -10,6 +10,7 @@ use App\Model\PriceManager;
 use App\Model\Settings;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
+use Nette\InvalidArgumentException;
 
 class AdminPresenter extends BasePresenter
 {
@@ -33,7 +34,15 @@ class AdminPresenter extends BasePresenter
      */
     function actionFinish($id, $volume = null)
     {
-        $affected = $this->orderManager->finishOrder($id, $volume ? $volume : 0);
+        try {
+            $affected = $this->orderManager->finishOrder($id, $volume ? $volume : 0);
+        } catch (InvalidArgumentException $e) {
+            if (!$this->isAjax()) {
+                $this->flashMessage($e->getMessage(), 'danger');
+            }
+
+            return;
+        }
 
         if (!$this->isAjax()) {
             if ($affected == 0) {
