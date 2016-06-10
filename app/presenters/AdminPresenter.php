@@ -4,7 +4,10 @@ namespace App\Presenters;
 
 
 use App\Controls\IOrdersGridControlFactory;
+use App\Model\InstitutionManager;
 use App\Model\OrderManager;
+use App\Model\PriceManager;
+use App\Model\Settings;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 
@@ -15,6 +18,12 @@ class AdminPresenter extends BasePresenter
 
     /** @var IOrdersGridControlFactory @inject */
     public $ordersGridControlFactory;
+
+    /** @var InstitutionManager @inject */
+    public $institutionManager;
+
+    /** @var PriceManager @inject */
+    public $priceManager;
 
     /**
      * Mark order as done.
@@ -129,6 +138,47 @@ class AdminPresenter extends BasePresenter
             ])
             ->order('created DESC')
             ->limit(10);
+    }
+
+    function renderSettings()
+    {
+        $this->template->pricelist = $this->institutionManager->institutionPricelist();
+    }
+
+    /**
+     * @return Form
+     */
+    protected function createComponentPriceForm()
+    {
+        $form = new Form();
+
+        $form->addSelect('instituce_id', 'Instituce', $this->institutionManager->institutionPairs())
+            ->setPrompt('-vyberte-')
+            ->setRequired(FORM_REQUIRED);
+        $form->addSelect('produkty_id', 'Kryokapalina', $this->orderManager->productPairs())
+            ->setPrompt('-vyberte-')
+            ->setRequired(FORM_REQUIRED);
+        $form->addText('cena', 'Cena')
+            ->setRequired(FORM_REQUIRED)
+            ->addRule(Form::FLOAT, 'Cena musí být číslo.');
+
+        $form->addSubmit('process', 'Uložit');
+
+        $form->onSuccess[] = $this->priceFormSucceeded;
+
+        return BootstrapForm::makeBootstrap($form);
+    }
+
+    /**
+     * @param Form $form
+     * @param $values
+     */
+    function priceFormSucceeded(Form $form, $values)
+    {
+        $this->priceManager->updatePrice($values->cena, $values->instituce_id, $values->produkty_id);
+
+        $this->flashMessage('Změny byly uloženy', 'info');
+        $this->redirect('this');
     }
 
     /**

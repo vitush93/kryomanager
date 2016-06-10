@@ -52,4 +52,13 @@ class Settings extends Object
     {
         $this->_get($key)->update(['value' => $value]);
     }
+
+    /**
+     * @return array
+     */
+    function all()
+    {
+        return $this->db->table(self::TABLE_SETTINGS)
+            ->fetchPairs('key', 'value');
+    }
 }

@@ -12,7 +12,8 @@ use Nette\Utils\DateTime;
 class OrderManager extends Object
 {
     const TABLE_ORDERS = 'objednavky';
-    const TABLE_PRICES = 'ceny';
+    const TABLE_PRICES = PriceManager::TABLE_PRICES;
+    const TABLE_PRODUCTS = 'produkty';
 
     const ORDER_STATUS_PENDING = 1,
         ORDER_STATUS_CANCELLED = 2,
@@ -50,6 +51,15 @@ class OrderManager extends Object
         $this->userManager = $userManager;
         $this->settings = $settings;
         $this->institutionManager = $institutionManager;
+    }
+
+    /**
+     * @return array
+     */
+    public function productPairs()
+    {
+        return $this->db->table(self::TABLE_PRODUCTS)
+            ->fetchPairs('id', 'nazev');
     }
 
     /**

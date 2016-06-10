@@ -1,0 +1,32 @@
+{block content}
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Nastavení cen</div>
+                <div class="panel-body">
+                    <table class="table">
+                        {foreach $pricelist as $inst}
+                            <tr>
+                                <th>{$inst[nazev]}</th>
+                                {foreach $inst[prices] as $p}
+                                    <th>{$p[produkt]}</th>
+                                    <td class="al-right">{$p[cena]} Kč</td>
+                                {/foreach}
+                            </tr>
+                            <tr>
+                                <td></td>
+                                {foreach $inst[prices] as $p}
+                                    <th>Platná od</th>
+                                    <td class="al-right">{$p[platna_od]|date:'j.n.Y'}</td>
+                                {/foreach}
+                            </tr>
+                        {/foreach}
+                    </table>
+                    <br>
+                    {control priceForm}
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}

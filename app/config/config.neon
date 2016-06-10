@@ -29,4 +29,5 @@ services:
     - App\Forms\AccFormFactory
     - App\Controls\IOrdersGridControlFactory
     - App\Controls\IReportControlFactory
+    - App\Model\PriceManager
     router: App\RouterFactory::createRouter
