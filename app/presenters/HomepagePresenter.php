@@ -6,6 +6,7 @@ namespace App\Presenters;
 use App\Forms\AccFormFactory;
 use App\Forms\OrderFormFactory;
 use App\Model\OrderManager;
+use App\Model\UserManager;
 use Grido\Components\Filters\Filter;
 use Grido\Grid;
 use Libs\BootstrapForm;
@@ -24,10 +25,13 @@ class HomepagePresenter extends BasePresenter
     /** @var OrderManager @inject */
     public $orderManager;
 
-    function renderDefault()
+    protected function startup()
     {
-        $this->template->ceny = $this->orderManager->getPricelistForUser($this->user->id);
-        $this->template->info = $this->accFormFactory->getUser();
+        parent::startup();
+
+        if ($this->user->isInRole(UserManager::ROLE_ADMIN)) {
+            $this->redirect('Admin:default');
+        }
     }
 
     /**
@@ -50,6 +54,12 @@ class HomepagePresenter extends BasePresenter
         $this->redirect('default');
     }
 
+    function renderDefault()
+    {
+        $this->template->ceny = $this->orderManager->getPricelistForUser($this->user->id);
+        $this->template->info = $this->accFormFactory->getUser();
+    }
+
     /**
      * @return Grid
      */
@@ -70,11 +80,13 @@ class HomepagePresenter extends BasePresenter
             '' => '',
             'pending' => 'nevyřízená',
             'cancelled' => 'stornovaná',
-            'completed' => 'vyřízená'
+            'completed' => 'vyřízená',
+            'done' => 'dokončená'
         ])->setCondition([
             'pending' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_PENDING],
             'cancelled' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_CANCELLED],
-            'completed' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_COMPLETED]
+            'completed' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_COMPLETED],
+            'done' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_DONE]
         ]);
 
         $grid->addFilterSelect('produkt', '', [

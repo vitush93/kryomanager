@@ -1,0 +1,50 @@
+{block content}
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">Rychle dokončit objednávku</div>
+                <div class="panel-body">
+                    {control doneOrderForm}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">Rychle vyřídit objednávku</div>
+                <div class="panel-body">
+                    {control completeOrderForm}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">Nové objednávky</div>
+                <div class="panel-body">
+                    <table class="table">
+                        {foreach $pending as $o}
+                            <tr>
+                                <td>#{$o->id}</td>
+                                <td>{$o->created|date:'j.n.Y H:i'}</td>
+                                <td>{$o->produkt}</td>
+                                <td>{$o->objem} l</td>
+                                <td>
+                                    <a href="{link complete $o->id}" onclick="return confirm('Vyřídit objednávku?')"
+                                       title="vyřídit"><i class="fa fa-check"></i></a>
+                                    &nbsp;
+                                    <a href="{link cancel $o->id}" onclick="return confirm('Stornovat objednávku?')"
+                                       title="stornovat"><i class="fa fa-times"></i></a>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </table>
+                    {if $pending->count() == 0}
+                        <p>Žádné nové nevyřízené objednávky.</p>
+                    {/if}
+                </div>
+            </div>
+        </div>
+
+    </div>
+{/block}

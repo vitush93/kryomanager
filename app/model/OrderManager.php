@@ -16,7 +16,8 @@ class OrderManager extends Object
 
     const ORDER_STATUS_PENDING = 1,
         ORDER_STATUS_CANCELLED = 2,
-        ORDER_STATUS_COMPLETED = 3;
+        ORDER_STATUS_COMPLETED = 3,
+        ORDER_STATUS_DONE = 4;
 
     /** @var Context */
     private $db;
@@ -56,6 +57,30 @@ class OrderManager extends Object
     {
         return $this->db->table(self::TABLE_ORDERS)
             ->where('id', $id);
+    }
+
+    /**
+     * @param int $id
+     * @param float|int $returned_volume
+     */
+    function finishCompletedOrder($id, $returned_volume = 0)
+    {
+        $this->order($id)
+            ->where('objednavky_stav_id', self::ORDER_STATUS_COMPLETED)
+            ->update([
+                'objednavky_stav_id' => self::ORDER_STATUS_DONE,
+                'objem_vraceno' => $returned_volume
+            ]);
+    }
+
+    /**
+     * @param int $id
+     */
+    function completePendingOrder($id)
+    {
+        $this->order($id)
+            ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING)
+            ->update(['objednavky_stav_id' => self::ORDER_STATUS_COMPLETED]);
     }
 
     /**
@@ -105,6 +130,15 @@ class OrderManager extends Object
             skupiny.nazev AS skupina,
             instituce.nazev AS intituce,
             objednavky_stav.nazev AS stav');
+    }
+
+    /**
+     * @return Selection
+     */
+    function getPendingOrders()
+    {
+        return $this->getOrders()
+            ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING);
     }
 
     /**

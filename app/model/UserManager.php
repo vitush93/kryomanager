@@ -19,6 +19,9 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
         COLUMN_PASSWORD_HASH = 'heslo',
         COLUMN_EMAIL = 'email',
         COLUMN_ROLE = 'role';
+    
+    const ROLE_ADMIN = 'admin',
+        ROLE_USER = 'user';
 
 
     /** @var Nette\Database\Context */

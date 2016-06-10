@@ -40,12 +40,22 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
-                    <li class="{ifCurrent Homepage:default}active{/ifCurrent}">
-                        <a href="{link Homepage:default}">Domů</a>
-                    </li>
-                    <li class="{ifCurrent Homepage:orders}active{/ifCurrent}">
-                        <a href="{link Homepage:orders}">Přehled objednávek</a>
-                    </li>
+
+                    {if $user->isInRole('user')}
+                        <li class="{ifCurrent Homepage:default}active{/ifCurrent}">
+                            <a href="{link Homepage:default}">Domů</a>
+                        </li>
+                        <li class="{ifCurrent Homepage:orders}active{/ifCurrent}">
+                            <a href="{link Homepage:orders}">Přehled objednávek</a>
+                        </li>
+                    {else}
+                        <li class="{ifCurrent Admin:default}active{/ifCurrent}">
+                            <a href="{link Admin:default}">Domů</a>
+                        </li>
+                        <li class="{ifCurrent Admin:orders}active{/ifCurrent}">
+                            <a href="{link Admin:orders}">Přehled objednávek</a>
+                        </li>
+                    {/if}
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
