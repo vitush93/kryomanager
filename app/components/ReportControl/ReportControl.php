@@ -32,7 +32,7 @@ class ReportControl extends Control
     {
         $rep = $this->orders->select('
             produkty.nazev AS produkt,
-            SUM(objem) AS volume,
+            SUM(objem - objem_vraceno) AS volume,
             SUM(ceny.cena * (objem - objem_vraceno)) AS cost,
             SUM(ceny.cena * (objem - objem_vraceno) + ceny.cena * (objem - objem_vraceno) * dph / 100) AS cost_dph
             ')
