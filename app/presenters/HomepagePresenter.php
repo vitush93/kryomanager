@@ -114,6 +114,7 @@ class HomepagePresenter extends BasePresenter
         $grid = new Grid();
         $grid->setModel($this->orderManager->getPendingOrdersForUser($this->user->id));
         $grid->getTranslator()->setLang('cs');
+        $grid->setDefaultSort(['created' => 'DESC']);
 
         $this->setupOrdersGrid($grid);
 
