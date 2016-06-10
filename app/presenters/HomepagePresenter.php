@@ -48,8 +48,6 @@ class HomepagePresenter extends BasePresenter
 
         $this->orderManager->cancelPendingOrder($id);
 
-        // TODO notify admin
-
         $this->flashMessage('Objednávka byla zrušena.', 'info');
         $this->redirect('default');
     }

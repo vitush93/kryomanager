@@ -131,6 +131,27 @@ class OrdersGridControl extends Control
         $grid->getColumn('objem')->cellPrototype->class = 'right';
         $grid->getColumn('cena_celkem')->cellPrototype->class = 'right';
 
+        $grid->addActionHref('cancel', 'Storno')
+            ->setConfirm('Opravdu stornovat objednávku?')
+            ->setIcon('remove')
+            ->setCustomRender(function ($item) {
+                if ($item->stav_id == OrderManager::ORDER_STATUS_PENDING) {
+                    return '<a class="grid-action-cancel btn btn-default btn-xs btn-mini" href="'.$this->presenter->link('Admin:cancel', ['id' => $item->id, 'ref' => 'orders']).'" data-grido-confirm="Opravdu stornovat objednávku?"><i class="glyphicon glyphicon-remove fa fa-remove icon-remove"></i> Storno</a>';
+                } else {
+                    return '';
+                }
+            });
+        $grid->addActionHref('complete', 'Vyřídit')
+            ->setConfirm('Označit objednávku jako vyřízenou?')
+            ->setIcon('ok')
+            ->setCustomRender(function ($item) {
+                if ($item->stav_id == OrderManager::ORDER_STATUS_PENDING) {
+                    return '<a class="grid-action-complete btn btn-default btn-xs btn-mini" href="'.$this->presenter->link('Admin:complete', ['id' => $item->id, 'ref' => 'orders']).'" data-grido-confirm="Označit objednávku jako vyřízenou?"><i class="glyphicon glyphicon-ok fa fa-ok icon-ok"></i> Vyřídit</a>';
+                } else {
+                    return '';
+                }
+            });
+
         return $grid;
     }
 

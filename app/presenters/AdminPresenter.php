@@ -33,7 +33,12 @@ class AdminPresenter extends BasePresenter
                 $this->flashMessage('Objednávka byla dokončena.', 'success');
             }
 
-            $this->redirect('default');
+            $ref = $this->getParameter('ref');
+            if ($ref) {
+                $this->redirect($ref);
+            } else {
+                $this->redirect('default');
+            }
         }
     }
 
@@ -53,7 +58,12 @@ class AdminPresenter extends BasePresenter
                 $this->flashMessage('Objednávka byla vyřízena.', 'success');
             }
 
-            $this->redirect('default');
+            $ref = $this->getParameter('ref');
+            if ($ref) {
+                $this->redirect($ref);
+            } else {
+                $this->redirect('default');
+            }
         }
     }
 
@@ -64,11 +74,21 @@ class AdminPresenter extends BasePresenter
      */
     function actionCancel($id)
     {
-        $this->orderManager->cancelPendingOrder($id);
+        $affected = $this->orderManager->cancelPendingOrder($id);
 
         if (!$this->isAjax()) {
-            $this->flashMessage('Objednávka byla zrušena.', 'info');
-            $this->redirect('default');
+            if ($affected == 0) {
+                $this->flashMessage("Objednávka č. $id neexistuje nebo nebyla označena jako nevyřízená.", 'danger');
+            } else {
+                $this->flashMessage('Objednávka byla zrušena.', 'info');
+            }
+
+            $ref = $this->getParameter('ref');
+            if ($ref) {
+                $this->redirect($ref);
+            } else {
+                $this->redirect('default');
+            }
         }
     }
 
