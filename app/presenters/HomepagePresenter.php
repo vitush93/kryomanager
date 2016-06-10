@@ -86,7 +86,7 @@ class HomepagePresenter extends BasePresenter
             'pending' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_PENDING],
             'cancelled' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_CANCELLED],
             'completed' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_COMPLETED],
-            'done' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_DONE]
+            'done' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_FINISHED]
         ]);
 
         $grid->addFilterSelect('produkt', '', [

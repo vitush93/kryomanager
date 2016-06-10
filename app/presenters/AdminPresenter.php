@@ -20,11 +20,11 @@ class AdminPresenter extends BasePresenter
      */
     function actionFinish($id, $volume = null)
     {
-        $affected = $this->orderManager->finishCompletedOrder($id, $volume ? $volume : 0);
+        $affected = $this->orderManager->finishOrder($id, $volume ? $volume : 0);
 
         if (!$this->isAjax()) {
             if ($affected == 0) {
-                $this->flashMessage("Objednávka č. $id neexistuje nebo nebyla označena jako vyřízená.", 'danger');
+                $this->flashMessage("Objednávka č. $id neexistuje nebo byla stornovaná či je již dokončená.", 'danger');
             } else {
                 $this->flashMessage('Objednávka byla dokončena.', 'success');
             }
@@ -44,7 +44,7 @@ class AdminPresenter extends BasePresenter
 
         if (!$this->isAjax()) {
             if ($affected == 0) {
-                $this->flashMessage("Objednávka č. $id neexistuje nebo nebyla označena jako nevyřízená.", 'danger');
+                $this->flashMessage("Objednávka č. $id neexistuje, nebyla označena jako nevyřízená nebo byla stornovaná.", 'danger');
             } else {
                 $this->flashMessage('Objednávka byla vyřízena.', 'success');
             }
@@ -85,7 +85,7 @@ class AdminPresenter extends BasePresenter
             ->where('MONTH(created) = MONTH(NOW())')
             ->where('YEAR(created) = YEAR(NOW())')
             ->where('produkty_id', OrderManager::PRODUCT_NITROGEN)
-            ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_DONE)
+            ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_FINISHED)
             ->fetch()
             ->nitrogen;
 
@@ -94,7 +94,7 @@ class AdminPresenter extends BasePresenter
             ->where('MONTH(created) = MONTH(NOW())')
             ->where('YEAR(created) = YEAR(NOW())')
             ->where('produkty_id', OrderManager::PRODUCT_HELIUM)
-            ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_DONE)
+            ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_FINISHED)
             ->fetch()
             ->helium;
 

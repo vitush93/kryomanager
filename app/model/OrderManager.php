@@ -17,7 +17,7 @@ class OrderManager extends Object
     const ORDER_STATUS_PENDING = 1,
         ORDER_STATUS_CANCELLED = 2,
         ORDER_STATUS_COMPLETED = 3,
-        ORDER_STATUS_DONE = 4;
+        ORDER_STATUS_FINISHED = 4;
 
     const PRODUCT_HELIUM = 1,
         PRODUCT_NITROGEN = 2;
@@ -67,14 +67,42 @@ class OrderManager extends Object
      * @param float|int $returned_volume
      * @return int
      */
+    function finishOrder($id, $returned_volume = 0)
+    {
+        return $this->order($id)
+            ->where('objednavky_stav_id IN (?)', [
+                self::ORDER_STATUS_COMPLETED,
+                self::ORDER_STATUS_PENDING
+            ])
+            ->update([
+                'objednavky_stav_id' => self::ORDER_STATUS_FINISHED,
+                'objem_vraceno' => $returned_volume
+            ]);
+    }
+
+    /**
+     * @param int $id
+     * @param float|int $returned_volume
+     * @return int
+     */
     function finishCompletedOrder($id, $returned_volume = 0)
     {
         return $this->order($id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_COMPLETED)
             ->update([
-                'objednavky_stav_id' => self::ORDER_STATUS_DONE,
+                'objednavky_stav_id' => self::ORDER_STATUS_FINISHED,
                 'objem_vraceno' => $returned_volume
             ]);
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    function completeOrder($id)
+    {
+        return $this->order($id)
+            ->update(['objednavky_stav_id' => self::ORDER_STATUS_COMPLETED]);
     }
 
     /**
