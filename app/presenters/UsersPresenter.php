@@ -11,6 +11,7 @@ use Grido\Components\Filters\Filter;
 use Grido\Grid;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
+use Nette\Security\Passwords;
 
 class UsersPresenter extends BasePresenter
 {
@@ -92,6 +93,8 @@ class UsersPresenter extends BasePresenter
      */
     function newUserFormSucceeded(Form $form, $values)
     {
+        $values->heslo = Passwords::hash($values->heslo);
+
         $builder = new UserBuilder();
         $builder->setData($values);
 
