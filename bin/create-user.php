@@ -1,24 +1,35 @@
 <?php
 
-if (!isset($_SERVER['argv'][2])) {
-	echo '
+if (!isset($_SERVER['argv'][5])) {
+    echo '
 Add new user to database.
 
-Usage: create-user.php <name> <password>
+Usage: create-user.php <email> <password> <name> <instituce> <skupina>
 ';
-	exit(1);
+    exit(1);
 }
 
 list(, $name, $password) = $_SERVER['argv'];
 
 $container = require __DIR__ . '/../app/bootstrap.php';
-$manager = $container->getByType('App\Model\UserManager');
+
+/** @var \Nette\Database\Context $db */
+$db = $container->getByType('Nette\Database\Context');
 
 try {
-	$manager->add($name, $password);
-	echo "User $name was added.\n";
+    $u = $_SERVER['argv'];
+
+    $db->table('uzivatele')->insert([
+        'email' => $u[1],
+        'heslo' => \Nette\Security\Passwords::hash($u[2]),
+        'jmeno' => $u[3],
+        'instituce_id' => $u[4],
+        'skupiny_id' => $u[5]
+    ]);
+
+    echo "User {$u[3]} was added.\n";
 
 } catch (App\Model\DuplicateEmailException $e) {
-	echo "Error: duplicate name.\n";
-	exit(1);
+    echo "Error: duplicate name.\n";
+    exit(1);
 }
