@@ -1,4 +1,4 @@
--- Adminer 4.2.4 MySQL dump
+-- Adminer 4.2.5 MySQL dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -52,6 +52,9 @@ CREATE TABLE `objednavky` (
   `instituce_id` int(11) NOT NULL,
   `objednavky_stav_id` int(11) NOT NULL DEFAULT '1',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `vyrizeno` timestamp NULL DEFAULT NULL,
+  `stornovano` timestamp NULL DEFAULT NULL,
+  `dokonceno` timestamp NULL DEFAULT NULL,
   `objem` decimal(19,4) NOT NULL,
   `objem_vraceno` decimal(19,4) NOT NULL DEFAULT '0.0000',
   `jmeno` varchar(255) NOT NULL,
@@ -120,4 +123,4 @@ CREATE TABLE `uzivatele` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2016-06-09 21:04:05
+-- 2016-06-25 17:43:56
