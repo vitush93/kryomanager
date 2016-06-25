@@ -19,7 +19,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
         COLUMN_PASSWORD_HASH = 'heslo',
         COLUMN_EMAIL = 'email',
         COLUMN_ROLE = 'role';
-    
+
     const ROLE_ADMIN = 'admin',
         ROLE_USER = 'user';
 
@@ -41,6 +41,11 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
         $this->institutionManager = $institutionManager;
     }
 
+    function table()
+    {
+        return $this->database->table(self::TABLE_USERS);
+    }
+
     function find($id)
     {
         return $this->database->table(self::TABLE_USERS)
@@ -48,6 +53,20 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
             ->fetch();
     }
 
+    /**
+     * @param int $id user's id.
+     * @param Nette\Utils\ArrayHash $values edit form values.
+     */
+    function updateUser($id, $values)
+    {
+        if ($values->heslo) {
+            $values->heslo = Passwords::hash($values->heslo);
+        } else {
+            unset($values->heslo);
+        }
+
+        $this->table()->where('id', $id)->update($values);
+    }
 
     /**
      * Performs an authentication.

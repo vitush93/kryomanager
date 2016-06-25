@@ -48,7 +48,7 @@
                         <li class="{ifCurrent Homepage:orders}active{/ifCurrent}">
                             <a href="{link Homepage:orders}">Přehled objednávek</a>
                         </li>
-                    {else}
+                    {elseif $user->isInRole('admin')}
                         <li class="{ifCurrent Admin:default}active{/ifCurrent}">
                             <a href="{link Admin:default}">Domů</a>
                         </li>
@@ -57,6 +57,9 @@
                         </li>
                         <li class="{ifCurrent Reporting:default}active{/ifCurrent}">
                             <a href="{link Reporting:default}">Reporty</a>
+                        </li>
+                        <li class="{if $presenter->name == 'Users'}active{/if}">
+                            <a href="{link Users:default}">Uživatelé</a>
                         </li>
                         <li class="{ifCurrent Admin:settings}active{/ifCurrent}">
                             <a href="{link Admin:settings}">Nastavení</a>

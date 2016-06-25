@@ -1,0 +1,58 @@
+{block content}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Detail uživatele</div>
+                <div class="panel-body">
+                    <table class="table">
+                        <tr>
+                            <th>Jméno</th>
+                            <td>{$u->jmeno}</td>
+                            <th>E-mail</th>
+                            <td>{$u->email}</td>
+                        </tr>
+                        <tr>
+                            <th>Role</th>
+                            <td>{$u->role|capitalize}</td>
+                            <th>Vytvořen</th>
+                            <td>{$u->created|date:'j.n.Y H:i'}</td>
+                        </tr>
+                        <tr>
+                            <th>Instituce</th>
+                            <td>{$u->instituce->nazev}</td>
+                            <th>Skupina</th>
+                            <td>{$u->skupiny->nazev}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">Objednávky uživatele</div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Kryokapalina</th>
+                            <th>Objem</th>
+                            <th>Datum</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach $objednavky as $o}
+                        <tr>
+                            <td>{$o->id}</td>
+                            <td>{$o->produkty->nazev}</td>
+                            <td>{$o->objem}</td>
+                            <td>{$o->created|date:'j.n.Y H:i'}</td>
+                        </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}

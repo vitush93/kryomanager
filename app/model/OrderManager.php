@@ -54,6 +54,11 @@ class OrderManager extends Object
         $this->institutionManager = $institutionManager;
     }
 
+    function userOrders($user_id)
+    {
+        return $this->allOrders()->where('uzivatele_id', $user_id);
+    }
+
     /**
      * @return array
      */
