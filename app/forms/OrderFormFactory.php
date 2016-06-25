@@ -76,7 +76,11 @@ class OrderFormFactory extends Object
             $this->orderManager->add(
                 $values->produkty_id,
                 $values->objem,
-                $this->user->id);
+                $this->user->id,
+                isset($values->adresa) ? $values->adresa : null,
+                isset($values->ico) ? $values->ico : null,
+                isset($values->dic) ? $values->dic : null
+            );
 
             if ($onSuccess) {
                 $onSuccess();
