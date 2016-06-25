@@ -7,6 +7,7 @@ use App\Controls\IReportControlFactory;
 use App\Model\InstitutionManager;
 use App\Model\OrderManager;
 use App\Model\UserManager;
+use DateTime;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 
@@ -49,7 +50,9 @@ class ReportingPresenter extends BasePresenter
         $form = new Form();
 
 
-        $form->addSelect('rok', 'Za rok', $this->orderYearsPairs())
+        $form->addText('from', 'Od')
+            ->setRequired(FORM_REQUIRED);
+        $form->addText('to', 'Do')
             ->setRequired(FORM_REQUIRED);
         $form->addSelect('skupina', 'Skupina', $this->institutionManager->groupPairs())
             ->setPrompt('-vyberte-')
@@ -60,12 +63,17 @@ class ReportingPresenter extends BasePresenter
             $orders = $this->orderManager->allOrders()
                 ->where('objednavky.skupiny_id', $values->skupina)
                 ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_FINISHED)
-                ->where('YEAR(objednavky.created) = ?', $values->rok);
+                ->where('objednavky.created >= ?', new DateTime($values->from))
+                ->where('objednavky.created <= ?', new DateTime($values->to));
 
             $this['report']->setOrders($orders);
         };
 
-        return BootstrapForm::makeBootstrap($form);
+        $form = BootstrapForm::makeBootstrap($form);
+        $form['from']->getControlPrototype()->class = 'form-control datepicker';
+        $form['to']->getControlPrototype()->class = 'form-control datepicker';
+
+        return $form;
     }
 
     /**
@@ -75,7 +83,9 @@ class ReportingPresenter extends BasePresenter
     {
         $form = new Form();
 
-        $form->addSelect('rok', 'Za rok', $this->orderYearsPairs())
+        $form->addText('from', 'Od')
+            ->setRequired(FORM_REQUIRED);
+        $form->addText('to', 'Do')
             ->setRequired(FORM_REQUIRED);
         $form->addSelect('instituce', 'Instituce', $this->institutionManager->institutionPairs())
             ->setPrompt('-vyberte-')
@@ -86,12 +96,17 @@ class ReportingPresenter extends BasePresenter
             $orders = $this->orderManager->allOrders()
                 ->where('objednavky.instituce_id', $values->instituce)
                 ->where('objednavky_stav_id', OrderManager::ORDER_STATUS_FINISHED)
-                ->where('YEAR(objednavky.created) = ?', $values->rok);
+                ->where('objednavky.created >= ?', new DateTime($values->from))
+                ->where('objednavky.created <= ?', new DateTime($values->to));
 
             $this['report']->setOrders($orders);
         };
 
-        return BootstrapForm::makeBootstrap($form);
+        $form = BootstrapForm::makeBootstrap($form);
+        $form['from']->getControlPrototype()->class = 'form-control datepicker';
+        $form['to']->getControlPrototype()->class = 'form-control datepicker';
+
+        return $form;
     }
 
     /**
