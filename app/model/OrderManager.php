@@ -95,7 +95,8 @@ class OrderManager extends Object
             ])
             ->update([
                 'objednavky_stav_id' => self::ORDER_STATUS_FINISHED,
-                'objem_vraceno' => $returned_volume
+                'objem_vraceno' => $returned_volume,
+                'dokonceno' => new DateTime()
             ]);
     }
 
@@ -110,7 +111,8 @@ class OrderManager extends Object
             ->where('objednavky_stav_id', self::ORDER_STATUS_COMPLETED)
             ->update([
                 'objednavky_stav_id' => self::ORDER_STATUS_FINISHED,
-                'objem_vraceno' => $returned_volume
+                'objem_vraceno' => $returned_volume,
+                'dokonceno' => new DateTime()
             ]);
     }
 
@@ -121,7 +123,10 @@ class OrderManager extends Object
     function completeOrder($id)
     {
         return $this->order($id)
-            ->update(['objednavky_stav_id' => self::ORDER_STATUS_COMPLETED]);
+            ->update([
+                'objednavky_stav_id' => self::ORDER_STATUS_COMPLETED,
+                'vyrizeno' => new DateTime()
+            ]);
     }
 
     /**
@@ -132,7 +137,10 @@ class OrderManager extends Object
     {
         return $this->order($id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING)
-            ->update(['objednavky_stav_id' => self::ORDER_STATUS_COMPLETED]);
+            ->update([
+                'objednavky_stav_id' => self::ORDER_STATUS_COMPLETED,
+                'vyrizeno' => new DateTime()
+            ]);
     }
 
     /**
@@ -143,7 +151,10 @@ class OrderManager extends Object
     {
         return $this->order($id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING)
-            ->update(['objednavky_stav_id' => self::ORDER_STATUS_CANCELLED]);
+            ->update([
+                'objednavky_stav_id' => self::ORDER_STATUS_CANCELLED,
+                'stornovano' => new DateTime()
+            ]);
     }
 
     /**
