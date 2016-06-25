@@ -24,14 +24,6 @@ class SignPresenter extends Presenter
         }
     }
 
-    protected function createComponentRegisterForm()
-    {
-        return $this->registerFormFactory->create(function () {
-            $this->flashMessage('Registrace úspěšná. Nyní se můžete přihlásit.', 'success');
-            $this->redirect('default');
-        });
-    }
-
     /**
      * @return Form
      */
