@@ -63,6 +63,13 @@ class OrderFormFactory extends Object
             ->setOption('description', 'Zadejte objem v litrech.')
             ->addRule(Form::FLOAT, 'Objem musí být číslo.')
             ->setRequired(FORM_REQUIRED);
+
+        if ($this->user->instituce->id == 1) { // check if user is external
+            $form->addTextArea('adresa', 'Adresa', 10, 4);
+            $form->addText('ico', 'IČO');
+            $form->addText('dic', 'DIČ');
+        }
+
         $form->addSubmit('process', 'Odeslat');
 
         $form->onSuccess[] = function (Form $form, $values) use ($onSuccess) {
