@@ -21,7 +21,8 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
         COLUMN_ROLE = 'role';
 
     const ROLE_ADMIN = 'admin',
-        ROLE_USER = 'user';
+        ROLE_USER = 'user',
+        ROLE_KRYO = 'kryo';
 
 
     /** @var Nette\Database\Context */
@@ -105,23 +106,111 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 
     /**
      * Adds new user.
-     * @param  string
-     * @param  string
-     * @param  string
-     * @return void
+     * @param UserBuilder $userBuilder
      * @throws DuplicateEmailException
      */
-    public function add($email, $password, $name)
+    public function add(UserBuilder $userBuilder)
     {
         try {
-            $this->database->table(self::TABLE_USERS)->insert([
-                self::COLUMN_NAME => $name,
-                self::COLUMN_PASSWORD_HASH => Passwords::hash($password),
-                self::COLUMN_EMAIL => $email,
-            ]);
+            $data = $userBuilder->getData();
+
+            $this->table()->insert($data);
         } catch (Nette\Database\UniqueConstraintViolationException $e) {
             throw new DuplicateEmailException;
         }
+    }
+
+}
+
+class UserBuilder extends Nette\Object
+{
+    const MIN_PASSWORD_LENGTH = 6;
+
+    private $data;
+
+    function __construct()
+    {
+        $this->data = new Nette\Utils\ArrayHash();
+    }
+
+    function getData()
+    {
+        return $this->data;
+    }
+
+    function setData(Nette\Utils\ArrayHash $data)
+    {
+        $this->data = $data;
+    }
+
+    function setEmail($email)
+    {
+        if (!Nette\Utils\Validators::isEmail($email)) {
+            throw new Nette\InvalidArgumentException("$email is not a valid e-mail address.");
+        }
+
+        $this->data->email = $email;
+
+        return $this;
+    }
+
+    function setName($name)
+    {
+        if (!$name) {
+            throw new Nette\InvalidArgumentException('Valid user name not provided.');
+        }
+
+        $this->data->name = $name;
+
+        return $this;
+    }
+
+    function setPassword($password)
+    {
+        if ($password && strlen($password) >= self::MIN_PASSWORD_LENGTH) {
+            $this->data->password = Passwords::hash($password);
+        } else {
+            throw new Nette\InvalidArgumentException("Password must be at least " . self::MIN_PASSWORD_LENGTH . " characters.");
+        }
+
+        return $this;
+    }
+
+    function setRole($role)
+    {
+        if ($role && in_array($role, [UserManager::ROLE_ADMIN, UserManager::ROLE_USER, UserManager::ROLE_KRYO])) {
+            $this->data->role = $role;
+        } else {
+            throw new Nette\InvalidArgumentException("Role $role is not valid.");
+        }
+
+        return $this;
+    }
+
+    function setInstitution($instituce)
+    {
+        if ($instituce instanceof Nette\Database\Table\ActiveRow) {
+            $this->data->instituce_id = $instituce->id;
+        } else if ($instituce) {
+            $this->data->instituce_id = $instituce;
+        } else {
+            throw new Nette\InvalidArgumentException("Not a valid institution: $instituce.");
+        }
+
+        return $this;
+    }
+
+    function setGroup($skupina)
+    {
+        if ($skupina instanceof Nette\Database\Table\ActiveRow) {
+            $this->data->skupiny_id = $skupina->id;
+        } else if ($skupina) {
+            $this->data->skupiny_id = $skupina;
+        } else {
+            throw new Nette\InvalidArgumentException("Not a valid group: $skupina.");
+        }
+
+        return $this;
     }
 
 }

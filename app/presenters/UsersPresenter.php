@@ -5,6 +5,7 @@ namespace App\Presenters;
 
 use App\Model\InstitutionManager;
 use App\Model\OrderManager;
+use App\Model\UserBuilder;
 use App\Model\UserManager;
 use Grido\Components\Filters\Filter;
 use Grido\Grid;
@@ -42,7 +43,7 @@ class UsersPresenter extends BasePresenter
         $this['newUserForm']->removeComponent($this['newUserForm']['cancel']);
         $this['newUserForm']['heslo']->setRequired(FORM_REQUIRED);
 
-        $this['newUserForm']->onSuccess[] = $this->userUserFormSucceeded;
+        $this['newUserForm']->onSuccess[] = $this->newUserFormSucceeded;
 
     }
 
@@ -52,10 +53,14 @@ class UsersPresenter extends BasePresenter
     function actionEdit($id)
     {
         $user = $this->userManager->find($id);
+        if (!$user) {
+            $this->error();
+        }
 
-        $this['userForm']['email']->setDefaultValue($user->email);
-        $this['userForm']['jmeno']->setDefaultValue($user->jmeno);
-        $this['userForm']['role']->setDefaultValue($user->role);
+        $user = $user->toArray();
+        unset($user['heslo']);
+
+        $this['userForm']->setDefaults($user);
 
         $this['userForm']->onSuccess[] = $this->userFormSucceeded;
     }
@@ -85,14 +90,24 @@ class UsersPresenter extends BasePresenter
      * @param Form $form
      * @param $values
      */
-    function userUserFormSucceeded(Form $form, $values)
+    function newUserFormSucceeded(Form $form, $values)
     {
-        dump($values);die;
+        $builder = new UserBuilder();
+        $builder->setData($values);
+
+        $this->userManager->add($builder);
+
+        $this->flashMessage('Nový uživatel byl vytvořen.', 'success');
+        $this->redirect('this');
     }
 
     protected function createComponentNewUserForm()
     {
-        return $this->createComponentUserForm();
+        $form = $this->createComponentUserForm();
+
+        $form['heslo']->setOption('description', '');
+
+        return $form;
     }
 
     /**
@@ -117,6 +132,12 @@ class UsersPresenter extends BasePresenter
             'user' => 'Uživatel',
             'kryo' => 'Kryo'
         ])->setPrompt('-vyberte-')->setRequired(FORM_REQUIRED);
+        $form->addSelect('instituce_id', 'Instituce', $this->institutionManager->institutionPairs())
+            ->setPrompt('-vyberte-')
+            ->setRequired(FORM_REQUIRED);
+        $form->addSelect('skupiny_id', 'Skupina', $this->institutionManager->groupPairs())
+            ->setPrompt('-vyberte-')
+            ->setRequired(FORM_REQUIRED);
 
         $form->addSubmit('process', 'Uložit');
         $form->addSubmit('cancel', 'Zrušit')
