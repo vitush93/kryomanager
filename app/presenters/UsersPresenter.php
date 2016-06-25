@@ -71,7 +71,7 @@ class UsersPresenter extends BasePresenter
     function renderDetail($id)
     {
         $this->template->u = $this->userManager->find($id);
-        $this->template->objednavky = $this->orderManager->userOrders($id);
+        $this->template->objednavky = $this->orderManager->userOrders($id)->order('created', 'DESC');
     }
 
     /**
