@@ -46,7 +46,16 @@ $nastaveni = [
     'dph.zadne' => '0',
     'dph.zakladni' => '21',
     'dph.prvni_snizena' => '15',
-    'dph.druha_snizena' => '10'
+    'dph.druha_snizena' => '10',
+    'faktura.jmeno' => 'Univerzita Karlova v Praze',
+    'faktura.adresa' => "Nové Město, Ke Karlovu 3\n12116 Praha 2",
+    'faktura.ico' => '00216208',
+    'faktura.dic' => 'CZ00216208',
+    'faktura.ucet' => '123456/0000',
+    'smtp.host' => 'smtp.example.com',
+    'smtp.username' => 'user',
+    'smtp.password' => 'pass',
+    'smtp.secure' => 'ssl'
 ];
 
 $produkty = [

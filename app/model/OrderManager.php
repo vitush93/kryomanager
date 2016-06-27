@@ -55,6 +55,15 @@ class OrderManager extends Object
     }
 
     /**
+     * @param int $id
+     * @return bool|mixed|\Nette\Database\Table\IRow
+     */
+    function find($id)
+    {
+        return $this->order($id)->fetch();
+    }
+
+    /**
      * @param $user_id
      * @return Selection
      */
@@ -270,15 +279,17 @@ class OrderManager extends Object
      * @param null $address
      * @param null $ico
      * @param null $dic
+     * @param null $ucet
      */
-    function add($product_id, $volume, $user_id, $address = null, $ico = null, $dic = null)
+    function add($product_id, $volume, $user_id, $address = null, $ico = null, $dic = null, $ucet = null)
     {
         $objednavka = new ArrayHash();
 
         $objednavka->adresa = $address;
         $objednavka->ico = $ico;
         $objednavka->dic = $dic;
-        
+        $objednavka->ucet = $ucet;
+
         // objem, produkt, uzivatel
         $objednavka->objem = $volume;
         $objednavka->produkty_id = $product_id;
@@ -307,5 +318,74 @@ class OrderManager extends Object
         $objednavka->dph = $dph;
 
         $this->db->table(self::TABLE_ORDERS)->insert($objednavka);
+    }
+
+    /**
+     * TODO
+     * @param $objednavka
+     */
+    function createInvoiceFromOrder($objednavka)
+    {
+        $pdf = new PDFInvoice(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Kryogenní pavilon');
+        $pdf->SetTitle('Faktura');
+        $pdf->SetSubject('Faktura');
+
+        $pdf->AddPage();
+
+        // create address box
+        $pdf->CreateTextBox('Customer name Inc.', 0, 55, 80, 10, 10, 'B');
+        $pdf->CreateTextBox('Mr. Tom Cat', 0, 60, 80, 10, 10);
+        $pdf->CreateTextBox('Street address', 0, 65, 80, 10, 10);
+        $pdf->CreateTextBox('Zip, city name', 0, 70, 80, 10, 10);
+
+        // invoice title / number
+        $pdf->CreateTextBox('Invoice #201012345', 0, 90, 120, 20, 16);
+
+        // date, order ref
+        $pdf->CreateTextBox('Date: ' . date('Y-m-d'), 0, 100, 0, 10, 10, '', 'R');
+        $pdf->CreateTextBox('Order ref.: #6765765', 0, 105, 0, 10, 10, '', 'R');
+
+        // list headers
+        $pdf->CreateTextBox('Quantity', 0, 120, 20, 10, 10, 'B', 'C');
+        $pdf->CreateTextBox('Product or service', 20, 120, 90, 10, 10, 'B');
+        $pdf->CreateTextBox('Price', 110, 120, 30, 10, 10, 'B', 'R');
+        $pdf->CreateTextBox('Amount', 140, 120, 30, 10, 10, 'B', 'R');
+
+        $pdf->Line(20, 129, 195, 129);
+
+        // some example data
+        $orders[] = array('quant' => 5, 'descr' => '.com domain registration', 'price' => 9.95);
+        $orders[] = array('quant' => 3, 'descr' => '.net domain name renewal', 'price' => 11.95);
+        $orders[] = array('quant' => 1, 'descr' => 'SSL certificate 256-Byte encryption', 'price' => 99.95);
+        $orders[] = array('quant' => 1, 'descr' => '25GB VPS Hosting, 200GB Bandwidth', 'price' => 19.95);
+
+        $currY = 128;
+        $total = 0;
+        foreach ($orders as $row) {
+            $pdf->CreateTextBox($row['quant'], 0, $currY, 20, 10, 10, '', 'C');
+            $pdf->CreateTextBox($row['descr'], 20, $currY, 90, 10, 10, '');
+            $pdf->CreateTextBox('$' . $row['price'], 110, $currY, 30, 10, 10, '', 'R');
+            $amount = $row['quant'] * $row['price'];
+            $pdf->CreateTextBox('$' . $amount, 140, $currY, 30, 10, 10, '', 'R');
+            $currY = $currY + 5;
+            $total = $total + $amount;
+        }
+        $pdf->Line(20, $currY + 4, 195, $currY + 4);
+
+        // output the total row
+        $pdf->CreateTextBox('Total', 20, $currY + 5, 135, 10, 10, 'B', 'R');
+        $pdf->CreateTextBox('$' . number_format($total, 2, '.', ''), 140, $currY + 5, 30, 10, 10, 'B', 'R');
+
+        // some payment instructions or information
+        $pdf->setXY(20, $currY + 30);
+        $pdf->SetFont(PDF_FONT_NAME_MAIN, '', 10);
+        $pdf->MultiCell(175, 10, '<em>Lorem ipsum dolor sit amet, consectetur adipiscing elit</em>. 
+Vestibulum sagittis venenatis urna, in pellentesque ipsum pulvinar eu. In nec <a href="http://www.google.com/">nulla libero</a>, eu sagittis diam. Aenean egestas pharetra urna, et tristique metus egestas nec. Aliquam erat volutpat. Fusce pretium dapibus tellus.', 0, 'L', 0, 1, '', '', true, null, true);
+
+        //Close and output PDF document
+        $pdf->Output('test.pdf');
     }
 }

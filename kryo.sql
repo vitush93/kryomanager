@@ -61,6 +61,7 @@ CREATE TABLE `objednavky` (
   `adresa` text,
   `ico` varchar(255) DEFAULT NULL,
   `dic` varchar(255) DEFAULT NULL,
+  `ucet` varchar(255) DEFAULT NULL,
   `dph` float NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `ceny_id` (`ceny_id`),
@@ -126,4 +127,4 @@ CREATE TABLE `uzivatele` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2016-06-25 21:11:04
+-- 2016-06-25 21:32:32

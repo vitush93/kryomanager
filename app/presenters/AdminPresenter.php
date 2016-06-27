@@ -11,6 +11,7 @@ use App\Model\Settings;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
+use Nette\Mail\SmtpMailer;
 
 class AdminPresenter extends BasePresenter
 {
@@ -25,6 +26,9 @@ class AdminPresenter extends BasePresenter
 
     /** @var PriceManager @inject */
     public $priceManager;
+
+    /** @var Settings @inject */
+    public $settings;
 
     /**
      * Mark order as done.
@@ -152,6 +156,91 @@ class AdminPresenter extends BasePresenter
     function renderSettings()
     {
         $this->template->pricelist = $this->institutionManager->institutionPricelist();
+    }
+
+    /**
+     * @param Form $form
+     * @param $values
+     */
+    function smtpFormSucceeded(Form $form, $values)
+    {
+        foreach ($values as $key => $value) {
+            $actualKey = "smtp.$key";
+            $this->settings->set($actualKey, $value);
+        }
+
+        $this->flashMessage('Nastavení uloženo.', 'info');
+        $this->redirect('this');
+    }
+
+    /**
+     * @return Form
+     */
+    protected function createComponentSmtpForm()
+    {
+        $form = new Form();
+
+        $form->addText('host', 'Host')
+            ->setDefaultValue($this->settings->get('smtp.host'))
+            ->setRequired(FORM_REQUIRED);
+        $form->addText('username', 'Uživatel')
+            ->setDefaultValue($this->settings->get('smtp.username'))
+            ->setRequired(FORM_REQUIRED);
+        $form->addText('password', 'Heslo')
+            ->setDefaultValue($this->settings->get('smtp.password'))
+            ->setRequired(FORM_REQUIRED);
+        $form->addSelect('secure', 'Zabezpečení', ['no' => 'žádné', 'ssl' => 'SSL', 'tls' => 'TLS'])
+            ->setRequired(FORM_REQUIRED)
+            ->setDefaultValue($this->settings->get('smtp.secure'));
+        $form->addSubmit('process', 'Uložit');
+
+        $form->onSuccess[] = $this->smtpFormSucceeded;
+
+        return BootstrapForm::makeBootstrap($form);
+    }
+
+    /**
+     * @param Form $form
+     * @param $values
+     */
+    function infoFormSucceeded(Form $form, $values)
+    {
+        foreach ($values as $key => $value) {
+            $actualKey = "faktura.$key";
+            $this->settings->set($actualKey, $value);
+        }
+
+        $this->flashMessage('Nastavení uloženo.', 'info');
+        $this->redirect('this');
+    }
+
+    /**
+     * @return Form
+     */
+    protected function createComponentInfoForm()
+    {
+        $form = new Form();
+
+        $form->addText('jmeno', 'Jméno')
+            ->setDefaultValue($this->settings->get('faktura.jmeno'))
+            ->setRequired(FORM_REQUIRED);
+        $form->addTextArea('adresa', 'Adresa')
+            ->setDefaultValue($this->settings->get('faktura.adresa'))
+            ->setRequired(FORM_REQUIRED);
+        $form->addText('ico', 'IČO')
+            ->setDefaultValue($this->settings->get('faktura.ico'))
+            ->setRequired(FORM_REQUIRED);
+        $form->addText('dic', 'DIČ')
+            ->setDefaultValue($this->settings->get('faktura.dic'))
+            ->setRequired(FORM_REQUIRED);
+        $form->addText('ucet', 'Účet')
+            ->setDefaultValue($this->settings->get('faktura.ucet'))
+            ->setRequired(FORM_REQUIRED);
+        $form->addSubmit('process', 'Uložit');
+
+        $form->onSuccess[] = $this->infoFormSucceeded;
+
+        return BootstrapForm::makeBootstrap($form);
     }
 
     /**

@@ -68,6 +68,7 @@ class OrderFormFactory extends Object
             $form->addTextArea('adresa', 'Adresa', 10, 4);
             $form->addText('ico', 'IČO');
             $form->addText('dic', 'DIČ');
+            $form->addText('ucet', 'Číslo účtu');
         }
 
         $form->addSubmit('process', 'Odeslat');
@@ -79,7 +80,8 @@ class OrderFormFactory extends Object
                 $this->user->id,
                 isset($values->adresa) ? $values->adresa : null,
                 isset($values->ico) ? $values->ico : null,
-                isset($values->dic) ? $values->dic : null
+                isset($values->dic) ? $values->dic : null,
+                isset($values->ucet) ? $values->ucet : null
             );
 
             if ($onSuccess) {
