@@ -6,11 +6,15 @@ namespace App\Forms;
 
 use App\Model\OrderManager;
 use App\Model\UserManager;
+use Grido\Components\Columns\Date;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 use Nette\Database\Context;
+use Nette\InvalidArgumentException;
+use Nette\Neon\Exception;
 use Nette\Object;
 use Nette\Security\User;
+use Nette\Utils\DateTime;
 
 class OrderFormFactory extends Object
 {
@@ -63,6 +67,10 @@ class OrderFormFactory extends Object
             ->setOption('description', 'Zadejte objem v litrech.')
             ->addRule(Form::FLOAT, 'Objem musí být číslo.')
             ->setRequired(FORM_REQUIRED);
+        $form->addText('datum_vyzvednuti', 'Datum')
+            ->setDefaultValue('zítra')
+            ->setRequired(FORM_REQUIRED)
+            ->setOption('description', 'Očekávané datum vyzvednutí.');
 
         if ($this->user->instituce->id == 1) { // check if user is external
             $form->addTextArea('adresa', 'Adresa', 10, 4);
@@ -74,10 +82,29 @@ class OrderFormFactory extends Object
         $form->addSubmit('process', 'Odeslat');
 
         $form->onSuccess[] = function (Form $form, $values) use ($onSuccess) {
+
+            try {
+                if ($values->datum_vyzvednuti == 'zítra') {
+                    $datum_vyzvednuti = new DateTime('tomorrow');
+                } else {
+                    $dnes = new DateTime();
+                    $datum_vyzvednuti = new DateTime($values->datum_vyzvednuti);
+
+                    if ($datum_vyzvednuti < $dnes) {
+                        throw new InvalidArgumentException;
+                    }
+                }
+            } catch (\Exception $e) {
+                $form->addError('Zadejte prosím platné budoucí datum.');
+
+                return;
+            }
+
             $this->orderManager->add(
                 $values->produkty_id,
                 $values->objem,
                 $this->user->id,
+                $datum_vyzvednuti,
                 isset($values->adresa) ? $values->adresa : null,
                 isset($values->ico) ? $values->ico : null,
                 isset($values->dic) ? $values->dic : null,
@@ -89,6 +116,10 @@ class OrderFormFactory extends Object
             }
         };
 
-        return BootstrapForm::makeBootstrap($form);
+        $form = BootstrapForm::makeBootstrap($form);
+
+        $form['datum_vyzvednuti']->getControlPrototype()->class = 'form-control datepicker';
+
+        return $form;
     }
 }

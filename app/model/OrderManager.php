@@ -276,12 +276,13 @@ class OrderManager extends Object
      * @param int $product_id
      * @param float $volume amount of kryoliquid
      * @param int $user_id
+     * @param $datum_vyzvednuti
      * @param null $address
      * @param null $ico
      * @param null $dic
      * @param null $ucet
      */
-    function add($product_id, $volume, $user_id, $address = null, $ico = null, $dic = null, $ucet = null)
+    function add($product_id, $volume, $user_id, $datum_vyzvednuti, $address = null, $ico = null, $dic = null, $ucet = null)
     {
         $objednavka = new ArrayHash();
 
@@ -289,6 +290,7 @@ class OrderManager extends Object
         $objednavka->ico = $ico;
         $objednavka->dic = $dic;
         $objednavka->ucet = $ucet;
+        $objednavka->datum_vyzvednuti = $datum_vyzvednuti;
 
         // objem, produkt, uzivatel
         $objednavka->objem = $volume;
