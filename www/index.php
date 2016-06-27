@@ -1,5 +1,7 @@
 <?php
 
+define('WWW_DIR', __DIR__);
+
 // Uncomment this line if you must temporarily take down your site for maintenance.
 // require __DIR__ . '/.maintenance.php';
 

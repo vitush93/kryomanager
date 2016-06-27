@@ -52,6 +52,7 @@ $nastaveni = [
     'faktura.ico' => '00216208',
     'faktura.dic' => 'CZ00216208',
     'faktura.ucet' => '123456/0000',
+    'smtp.addr' => 'admin@example.com',
     'smtp.host' => 'smtp.example.com',
     'smtp.username' => 'user',
     'smtp.password' => 'pass',

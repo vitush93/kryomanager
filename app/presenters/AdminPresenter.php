@@ -5,13 +5,14 @@ namespace App\Presenters;
 
 use App\Controls\IOrdersGridControlFactory;
 use App\Model\InstitutionManager;
+use App\Model\NotificationMail;
 use App\Model\OrderManager;
 use App\Model\PriceManager;
 use App\Model\Settings;
+use App\Model\SmtpMailer;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
-use Nette\Mail\SmtpMailer;
 
 class AdminPresenter extends BasePresenter
 {
@@ -29,6 +30,22 @@ class AdminPresenter extends BasePresenter
 
     /** @var Settings @inject */
     public $settings;
+
+    /** @var SmtpMailer @inject */
+    public $smtpMailer;
+
+    /** @var NotificationMail */
+    private $notificationMailer;
+
+    /**
+     * Prepare mailer object.
+     */
+    protected function startup()
+    {
+        parent::startup();
+
+        $this->notificationMailer = new NotificationMail($this->createTemplate(), $this->smtpMailer);
+    }
 
     /**
      * Mark order as done.
@@ -72,6 +89,16 @@ class AdminPresenter extends BasePresenter
     function actionComplete($id)
     {
         $affected = $this->orderManager->completePendingOrder($id);
+
+        if ($affected > 0) {
+            $order = $this->orderManager->find($id);
+            $this->notificationMailer
+                ->addTo($order->uzivatele->email)
+                ->setTemplateFile('notification.latte')
+                ->setSubject('Objednávka byla vyřízena!')
+                ->setTemplateVar('order', $order)
+                ->send();
+        }
 
         if (!$this->isAjax()) {
             if ($affected == 0) {
@@ -180,6 +207,10 @@ class AdminPresenter extends BasePresenter
     {
         $form = new Form();
 
+        $form->addText('addr', 'E-mail')
+            ->setDefaultValue($this->settings->get('smtp.addr'))
+            ->addRule(Form::EMAIL, 'Zadejte platnou e-mailovou adresu.')
+            ->setRequired(FORM_REQUIRED);
         $form->addText('host', 'Host')
             ->setDefaultValue($this->settings->get('smtp.host'))
             ->setRequired(FORM_REQUIRED);
