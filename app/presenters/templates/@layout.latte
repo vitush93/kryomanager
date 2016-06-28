@@ -65,6 +65,10 @@
                         <li class="{ifCurrent Admin:settings}active{/ifCurrent}">
                             <a href="{link Admin:settings}">Nastavení</a>
                         </li>
+                    {elseif $user->isInRole('kryo')}
+                        <li class="{ifCurrent Kryo:default}active{/ifCurrent}">
+                            <a href="{link Kryo:default}">Domů</a>
+                        </li>
                     {/if}
                 </ul>
 

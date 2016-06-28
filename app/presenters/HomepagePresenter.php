@@ -31,6 +31,8 @@ class HomepagePresenter extends BasePresenter
 
         if ($this->user->isInRole(UserManager::ROLE_ADMIN)) {
             $this->redirect('Admin:default');
+        } else if ($this->user->isInRole(UserManager::ROLE_KRYO)) {
+            $this->redirect('Kryo:default');
         }
     }
 
