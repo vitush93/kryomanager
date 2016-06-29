@@ -98,6 +98,11 @@ class KryoPresenter extends BasePresenter
             ->where('DATE(datum_vyzvednuti) = DATE(?)', new DateTime())
             ->order('created DESC')
             ->limit(10);
+
+        $this->template->tomorrow = $this->orderManager->getPendingOrders()
+            ->where('DATE(datum_vyzvednuti) = DATE(?)', new DateTime('tomorrow'))
+            ->order('created DESC')
+            ->limit(10);
     }
 
     /**

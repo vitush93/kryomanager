@@ -2,7 +2,7 @@
 
 {block content}
     <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-6">
             <div class="panel panel-success">
                 <div class="panel-heading">Rychle vyřídit objednávku podle čísla</div>
                 <div class="panel-body">
@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        <div class="col-lg-3">
+        <div class="col-lg-6">
             <div class="panel panel-success">
                 <div class="panel-heading">Rychle dokončit objednávku podle čísla</div>
                 <div class="panel-body">
@@ -58,14 +58,55 @@
                             </tr>
                         {/foreach}
                     </table>
-                    {*{if $pending->count() == 0}*}
-                        {*<p>Žádné nové nevyřízené objednávky.</p>*}
-                    {*{else}*}
-                        {*<p><a href="{link Admin:orders}">Všechny objednávky</a></p>*}
-                    {*{/if}*}
-                </div>
+                    {if $today->count() == 0}
+                    <p>Žádné nevyřízené objednávky.</p>
+                    {/if}
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-6">
+            <div class="panel panel-warning">
+                <div class="panel-heading">Objednávky k vyřízení na zítra</div>
+                <div class="panel-body">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Číslo obj.</th>
+                            <th>Datum</th>
+                            <th>Kryokapalina</th>
+                            <th>Objem</th>
+                            <th class="visible-lg">Instituce</th>
+                            <th class="visible-lg">Skupina</th>
+                            <th>Jméno</th>
+                            <th>Akce</th>
+                        </tr>
+                        {foreach $tomorrow as $o}
+                            <tr {if $o->stav_id == 2}class="order-cancelled"{/if}>
+                                <td>#{$o->id}</td>
+                                <td>{$o->created|date:'j.n.Y H:i'}</td>
+                                <td>{$o->produkt}</td>
+                                <td>{$o->objem} l</td>
+                                <td class="visible-lg">{$o->instituce}</td>
+                                <td class="visible-lg">{$o->skupina}</td>
+                                <td>{$o->jmeno}</td>
+                                <td>
+                                    {if $o->stav_id != 2}
+                                        <a href="{link complete $o->id}" onclick="return confirm('Vyřídit objednávku?')"
+                                           title="vyřídit"><i class="fa fa-check"></i></a>
+                                        &nbsp;
+                                        <a href="{link cancel $o->id}" onclick="return confirm('Stornovat objednávku?')"
+                                           title="stornovat"><i class="fa fa-times"></i></a>
+                                    {/if}
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </table>
+                    {if $tomorrow->count() == 0}
+                    <p>Žádné nevyřízené objednávky.</p>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 {/block}
