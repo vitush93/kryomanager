@@ -109,6 +109,17 @@ CREATE TABLE `skupiny` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `upozorneni`;
+CREATE TABLE `upozorneni` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `typ` varchar(255) NOT NULL,
+  `text` varchar(255) NOT NULL,
+  `seen` int(11) NOT NULL DEFAULT '0',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `uzivatele`;
 CREATE TABLE `uzivatele` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -128,4 +139,4 @@ CREATE TABLE `uzivatele` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2016-06-27 16:09:34
+-- 2016-06-30 22:12:05
