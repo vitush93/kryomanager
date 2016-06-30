@@ -6,6 +6,7 @@ namespace App\Presenters;
 use App\Model\NotificationMail;
 use App\Model\OrderManager;
 use App\Model\SmtpMailer;
+use App\Model\SystemNotifications;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
@@ -18,6 +19,9 @@ class KryoPresenter extends BasePresenter
 
     /** @var SmtpMailer @inject */
     public $smtpMailer;
+
+    /** @var SystemNotifications @inject */
+    public $systemNotifications;
 
     /** @var NotificationMail */
     private $notificationMailer;
@@ -92,6 +96,16 @@ class KryoPresenter extends BasePresenter
         }
     }
 
+    /**
+     * @param int $id
+     */
+    function handleSeen($id)
+    {
+        $this->systemNotifications->markAsSeen($id);
+
+        $this->redirect('this');
+    }
+
     function renderDefault()
     {
         $this->template->today = $this->orderManager->getPendingOrders()
@@ -102,6 +116,9 @@ class KryoPresenter extends BasePresenter
         $this->template->tomorrow = $this->orderManager->getPendingOrders()
             ->where('DATE(datum_vyzvednuti) = DATE(?)', new DateTime('tomorrow'))
             ->order('created DESC')
+            ->limit(10);
+
+        $this->template->notifications = $this->systemNotifications->getUnseen()
             ->limit(10);
     }
 

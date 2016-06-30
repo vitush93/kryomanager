@@ -2,7 +2,7 @@
 
 {block content}
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-3">
             <div class="panel panel-success">
                 <div class="panel-heading">Rychle vyřídit objednávku podle čísla</div>
                 <div class="panel-body">
@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-3">
             <div class="panel panel-success">
                 <div class="panel-heading">Rychle dokončit objednávku podle čísla</div>
                 <div class="panel-body">
@@ -22,6 +22,39 @@
             </div>
         </div>
 
+        <div class="col-lg-6">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Upozorění
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        {foreach $notifications as $n}
+                        <tr>
+                            <td>
+                                {$n->created|date:'j.n.Y H:i'}
+                            </td>
+                            <td>
+                                <strong>{$n->typ}</strong>
+                            </td>
+                            <td>
+                                {$n->text}
+                            </td>
+                            <td>
+                                <a href="{link seen! $n->id}" title="hotovo"><i class="fa fa-check"></i></a>
+                            </td>
+                        </tr>
+                        {/foreach}
+                    </table>
+                    {if $notifications->count() == 0}
+                        <p>Žádná nová upozornění.</p>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-lg-6">
             <div class="panel panel-danger">
                 <div class="panel-heading">Objednávky k vyřízení dnes</div>
@@ -59,12 +92,11 @@
                         {/foreach}
                     </table>
                     {if $today->count() == 0}
-                    <p>Žádné nevyřízené objednávky.</p>
+                        <p>Žádné nevyřízené objednávky.</p>
                     {/if}
                 </div>
             </div>
         </div>
-
         <div class="col-lg-6">
             <div class="panel panel-warning">
                 <div class="panel-heading">Objednávky k vyřízení na zítra</div>
@@ -102,7 +134,7 @@
                         {/foreach}
                     </table>
                     {if $tomorrow->count() == 0}
-                    <p>Žádné nevyřízené objednávky.</p>
+                        <p>Žádné nevyřízené objednávky.</p>
                     {/if}
                 </div>
             </div>

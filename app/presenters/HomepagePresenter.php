@@ -6,6 +6,7 @@ namespace App\Presenters;
 use App\Forms\AccFormFactory;
 use App\Forms\OrderFormFactory;
 use App\Model\OrderManager;
+use App\Model\SystemNotifications;
 use App\Model\UserManager;
 use Grido\Components\Filters\Filter;
 use Grido\Grid;
@@ -24,6 +25,9 @@ class HomepagePresenter extends BasePresenter
 
     /** @var OrderManager @inject */
     public $orderManager;
+
+    /** @var SystemNotifications @inject */
+    public $systemNotifications;
 
     protected function startup()
     {
@@ -49,6 +53,9 @@ class HomepagePresenter extends BasePresenter
         }
 
         $this->orderManager->cancelPendingOrder($id);
+
+        $order = $this->orderManager->find($id);
+        $this->systemNotifications->add('objednávka stornována', "Objednávka č. {$id} byla stornována ({$order->jmeno}, {$order->objem}L, {$order->produkty->nazev}).");
 
         $this->flashMessage('Objednávka byla zrušena.', 'info');
         $this->redirect('default');

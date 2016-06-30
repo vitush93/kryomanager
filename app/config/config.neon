@@ -31,4 +31,5 @@ services:
     - App\Controls\IReportControlFactory
     - App\Model\PriceManager
     - App\Model\SmtpMailer
+    - App\Model\SystemNotifications
     router: App\RouterFactory::createRouter
