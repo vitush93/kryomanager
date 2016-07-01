@@ -65,6 +65,14 @@ class AdminPresenter extends BasePresenter
             return;
         }
 
+        $order = $this->orderManager->find($id);
+        $this->notificationMailer
+            ->addTo($this->settings->get('faktura.uctarna'))
+            ->setTemplateFile('invoice.latte')
+            ->setSubject('Faktura')
+            ->setTemplateVar('order', $order)
+            ->send();
+
         if (!$this->isAjax()) {
             if ($affected == 0) {
                 $this->flashMessage("Objednávka č. $id neexistuje nebo byla stornovaná či je již dokončená.", 'danger');

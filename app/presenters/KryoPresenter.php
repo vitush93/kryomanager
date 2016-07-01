@@ -5,6 +5,7 @@ namespace App\Presenters;
 
 use App\Model\NotificationMail;
 use App\Model\OrderManager;
+use App\Model\Settings;
 use App\Model\SmtpMailer;
 use App\Model\SystemNotifications;
 use Libs\BootstrapForm;
@@ -23,6 +24,9 @@ class KryoPresenter extends BasePresenter
     /** @var SystemNotifications @inject */
     public $systemNotifications;
 
+    /** @var Settings @inject */
+    public $settings;
+
     /** @var NotificationMail */
     private $notificationMailer;
 
@@ -34,6 +38,43 @@ class KryoPresenter extends BasePresenter
         parent::startup();
 
         $this->notificationMailer = new NotificationMail($this->createTemplate(), $this->smtpMailer);
+    }
+
+    /**
+     * Mark order as done.
+     *
+     * @param int $id
+     * @param null|float $volume
+     */
+    function actionFinish($id, $volume = null)
+    {
+        try {
+            $affected = $this->orderManager->finishOrder($id, $volume ? $volume : 0);
+        } catch (InvalidArgumentException $e) {
+            if (!$this->isAjax()) {
+                $this->flashMessage($e->getMessage(), 'danger');
+            }
+
+            return;
+        }
+
+        $order = $this->orderManager->find($id);
+        $this->notificationMailer
+            ->addTo($this->settings->get('faktura.uctarna'))
+            ->setTemplateFile('invoice.latte')
+            ->setSubject('Faktura')
+            ->setTemplateVar('order', $order)
+            ->send();
+
+        if (!$this->isAjax()) {
+            if ($affected == 0) {
+                $this->flashMessage("Objednávka č. $id neexistuje nebo byla stornovaná či je již dokončená.", 'danger');
+            } else {
+                $this->flashMessage('Objednávka byla dokončena.', 'success');
+            }
+
+            $this->redirect('this');
+        }
     }
 
     /**
@@ -123,27 +164,6 @@ class KryoPresenter extends BasePresenter
     }
 
     /**
-     * @param Form $form
-     * @param $values
-     */
-    public function finishOrderFormSucceeded(Form $form, $values)
-    {
-        try {
-            $affected = $this->orderManager->finishOrder($values->obj_id, $values->returned);
-
-            if ($affected == 0) {
-                $this->flashMessage('Objednávku se nepodařilo dokončit (již je dokončená či stornovaná?).', 'warning');
-            }
-        } catch (InvalidArgumentException $e) {
-            if (!$this->isAjax()) {
-                $this->flashMessage($e->getMessage(), 'danger');
-            }
-        }
-
-        $this->redirect('this');
-    }
-
-    /**
      * @return Form
      */
     protected function createComponentFinishOrderForm()
@@ -161,7 +181,9 @@ class KryoPresenter extends BasePresenter
             ->setDefaultValue(0);
         $form->addSubmit('process', 'Dokončit');
 
-        $form->onSuccess[] = $this->finishOrderFormSucceeded;
+        $form->onSuccess[] = function (Form $form, $values) {
+            $this->actionFinish($values->obj_id, $values->returned);
+        };
 
         return BootstrapForm::makeBootstrap($form);
     }
