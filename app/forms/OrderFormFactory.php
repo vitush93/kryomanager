@@ -4,6 +4,7 @@
 namespace App\Forms;
 
 
+use App\Model\FileUploadHandler;
 use App\Model\OrderManager;
 use App\Model\UserManager;
 use Grido\Components\Columns\Date;
@@ -71,6 +72,8 @@ class OrderFormFactory extends Object
             ->setDefaultValue('zítra')
             ->setRequired(FORM_REQUIRED)
             ->setOption('description', 'Očekávané datum vyzvednutí.');
+        $form->addUpload('pdf', 'Soubor s objednávkou')
+            ->setOption('description', 'Volitelné pole: soubor s vaší objednávkou');
 
         if ($this->user->instituce->id == 1) { // check if user is external
             $form->addTextArea('adresa', 'Adresa', 10, 4);
@@ -82,6 +85,10 @@ class OrderFormFactory extends Object
         $form->addSubmit('process', 'Odeslat');
 
         $form->onSuccess[] = function (Form $form, $values) use ($onSuccess) {
+
+            if ($values->pdf->isOk()) {
+                $values->pdf = FileUploadHandler::upload($values->pdf);
+            }
 
             try {
                 if ($values->datum_vyzvednuti == 'zítra') {
@@ -108,7 +115,8 @@ class OrderFormFactory extends Object
                 isset($values->adresa) ? $values->adresa : null,
                 isset($values->ico) ? $values->ico : null,
                 isset($values->dic) ? $values->dic : null,
-                isset($values->ucet) ? $values->ucet : null
+                isset($values->ucet) ? $values->ucet : null,
+                isset($values->pdf) ? $values->pdf : null
             );
 
             if ($onSuccess) {

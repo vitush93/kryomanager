@@ -282,7 +282,7 @@ class OrderManager extends Object
      * @param null $dic
      * @param null $ucet
      */
-    function add($product_id, $volume, $user_id, $datum_vyzvednuti, $address = null, $ico = null, $dic = null, $ucet = null)
+    function add($product_id, $volume, $user_id, $datum_vyzvednuti, $address = null, $ico = null, $dic = null, $ucet = null, $pdf = null)
     {
         $objednavka = new ArrayHash();
 
@@ -291,6 +291,7 @@ class OrderManager extends Object
         $objednavka->dic = $dic;
         $objednavka->ucet = $ucet;
         $objednavka->datum_vyzvednuti = $datum_vyzvednuti;
+        $objednavka->pdf = $pdf;
 
         // objem, produkt, uzivatel
         $objednavka->objem = $volume;

@@ -60,6 +60,7 @@ CREATE TABLE `objednavky` (
   `datum_vyzvednuti` datetime NOT NULL,
   `jmeno` varchar(255) NOT NULL,
   `adresa` text,
+  `pdf` varchar(255) DEFAULT NULL,
   `ico` varchar(255) DEFAULT NULL,
   `dic` varchar(255) DEFAULT NULL,
   `ucet` varchar(255) DEFAULT NULL,
@@ -139,4 +140,4 @@ CREATE TABLE `uzivatele` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2016-06-30 22:12:05
+-- 2016-07-01 09:22:25
