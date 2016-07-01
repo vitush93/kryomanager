@@ -8,6 +8,7 @@ use Grido\Components\Filters\Filter;
 use Grido\Grid;
 use Nette\Application\UI\Control;
 use Nette\Database\Context;
+use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 
 class OrdersGridControl extends Control
@@ -18,13 +19,21 @@ class OrdersGridControl extends Control
     /** @var Context */
     private $db;
 
+    /** @var OrderManager */
+    private $orderManager;
+
+    /** @var null|IRow */
+    private $orderDetail = null;
+
     /**
      * OrdersGridControl constructor.
      * @param Context $context
+     * @param OrderManager $orderManager
      */
-    function __construct(Context $context)
+    function __construct(Context $context, OrderManager $orderManager)
     {
         $this->db = $context;
+        $this->orderManager = $orderManager;
     }
 
     /**
@@ -131,12 +140,17 @@ class OrdersGridControl extends Control
         $grid->getColumn('objem')->cellPrototype->class = 'right';
         $grid->getColumn('cena_celkem')->cellPrototype->class = 'right';
 
+        $grid->addActionHref('order', 'Detail')
+            ->setCustomHref(function ($item) {
+                return $this->link('detail!', $item->id);
+            })
+            ->setIcon('search');
         $grid->addActionHref('cancel', 'Storno')
             ->setConfirm('Opravdu stornovat objednávku?')
             ->setIcon('remove')
             ->setCustomRender(function ($item) {
                 if ($item->stav_id == OrderManager::ORDER_STATUS_PENDING) {
-                    return '<a class="grid-action-cancel btn btn-default btn-xs btn-mini" href="'.$this->presenter->link('Admin:cancel', ['id' => $item->id, 'ref' => 'orders']).'" data-grido-confirm="Opravdu stornovat objednávku?"><i class="glyphicon glyphicon-remove fa fa-remove icon-remove"></i> Storno</a>';
+                    return '<a class="grid-action-cancel btn btn-default btn-xs btn-mini" href="' . $this->presenter->link('Admin:cancel', ['id' => $item->id, 'ref' => 'orders']) . '" data-grido-confirm="Opravdu stornovat objednávku?"><i class="glyphicon glyphicon-remove fa fa-remove icon-remove"></i> Storno</a>';
                 } else {
                     return '';
                 }
@@ -146,7 +160,7 @@ class OrdersGridControl extends Control
             ->setIcon('ok')
             ->setCustomRender(function ($item) {
                 if ($item->stav_id == OrderManager::ORDER_STATUS_PENDING) {
-                    return '<a class="grid-action-complete btn btn-default btn-xs btn-mini" href="'.$this->presenter->link('Admin:complete', ['id' => $item->id, 'ref' => 'orders']).'" data-grido-confirm="Označit objednávku jako vyřízenou?"><i class="glyphicon glyphicon-ok fa fa-ok icon-ok"></i> Vyřídit</a>';
+                    return '<a class="grid-action-complete btn btn-default btn-xs btn-mini" href="' . $this->presenter->link('Admin:complete', ['id' => $item->id, 'ref' => 'orders']) . '" data-grido-confirm="Označit objednávku jako vyřízenou?"><i class="glyphicon glyphicon-ok fa fa-ok icon-ok"></i> Vyřídit</a>';
                 } else {
                     return '';
                 }
@@ -154,10 +168,49 @@ class OrdersGridControl extends Control
 
         return $grid;
     }
+    
+    function handlePending($id)
+    {
+        $this->orderManager->setStatus($id, OrderManager::ORDER_STATUS_PENDING);
+
+        $this->handleDetail($id);
+    }
+
+    function handleCancel($id)
+    {
+        $this->orderManager->setStatus($id, OrderManager::ORDER_STATUS_CANCELLED);
+
+        $this->handleDetail($id);
+    }
+    
+    function handleComplete($id)
+    {
+        $this->orderManager->setStatus($id, OrderManager::ORDER_STATUS_COMPLETED);
+
+        $this->handleDetail($id);
+    }
+    
+    /**
+     * @param int $id
+     */
+    function handleDetail($id)
+    {
+        $this->orderDetail = $this->orderManager->find($id);
+    }
+    
+    function handleBack()
+    {
+        $this->orderDetail = null;
+    }
 
     function render()
     {
-        $this->template->setFile(__DIR__ . '/OrdersGrid.latte');
+        if ($this->orderDetail) {
+            $this->template->o = $this->orderDetail;
+            $this->template->setFile(__DIR__ . '/detail.latte');
+        } else {
+            $this->template->setFile(__DIR__ . '/OrdersGrid.latte');
+        }
 
         $this->template->render();
     }

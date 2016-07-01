@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 
+use App\Controls\IOrdersGridControlFactory;
 use App\Model\NotificationMail;
 use App\Model\OrderManager;
 use App\Model\Settings;
@@ -26,6 +27,9 @@ class KryoPresenter extends BasePresenter
 
     /** @var Settings @inject */
     public $settings;
+
+    /** @var IOrdersGridControlFactory @inject */
+    public $ordersGridControlFactory;
 
     /** @var NotificationMail */
     private $notificationMailer;
@@ -161,6 +165,15 @@ class KryoPresenter extends BasePresenter
 
         $this->template->notifications = $this->systemNotifications->getUnseen()
             ->limit(10);
+    }
+
+    protected function createComponentOrdersGrid()
+    {
+        $grid = $this->ordersGridControlFactory->create();
+
+        $grid->setModel($this->orderManager->getOrders());
+
+        return $grid;
     }
 
     /**

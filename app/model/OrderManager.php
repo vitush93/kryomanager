@@ -55,6 +55,18 @@ class OrderManager extends Object
     }
 
     /**
+     * @param int $id order ID
+     * @param int $status order status ID
+     * @return int
+     */
+    function setStatus($id, $status)
+    {
+        return $this->order($id)->update([
+            'objednavky_stav_id' => $status
+        ]);
+    }
+
+    /**
      * @param int $id
      * @return bool|mixed|\Nette\Database\Table\IRow
      */
