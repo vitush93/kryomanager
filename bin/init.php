@@ -47,6 +47,7 @@ $nastaveni = [
     'dph.zakladni' => '21',
     'dph.prvni_snizena' => '15',
     'dph.druha_snizena' => '10',
+    'faktura.uctarna' => 'uctarna@troja.mff.cuni.cz',
     'faktura.jmeno' => 'Univerzita Karlova v Praze',
     'faktura.adresa' => "Nové Město, Ke Karlovu 3\n12116 Praha 2",
     'faktura.ico' => '00216208',

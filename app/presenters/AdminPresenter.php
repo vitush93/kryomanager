@@ -252,6 +252,9 @@ class AdminPresenter extends BasePresenter
     {
         $form = new Form();
 
+        $form->addText('uctarna', 'Účtárna')
+            ->setDefaultValue($this->settings->get('faktura.uctarna'))
+            ->setRequired(FORM_REQUIRED);
         $form->addText('jmeno', 'Jméno')
             ->setDefaultValue($this->settings->get('faktura.jmeno'))
             ->setRequired(FORM_REQUIRED);
