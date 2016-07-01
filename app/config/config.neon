@@ -29,6 +29,7 @@ services:
     - App\Forms\AccFormFactory
     - App\Controls\IOrdersGridControlFactory
     - App\Controls\IReportControlFactory
+    - App\Controls\IDListControlFactory
     - App\Model\PriceManager
     - App\Model\SmtpMailer
     - App\Model\SystemNotifications

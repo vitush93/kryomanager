@@ -115,3 +115,11 @@ tr.order-cancelled {
 .al-left {
   text-align: left !important;
 }
+
+@media print {
+  table.dlist {
+    td {
+      height: 80px;
+    }
+  }
+}

@@ -1,0 +1,69 @@
+
+<h3>
+    <span class="pull-left">Objednávka č. 123</span>
+    <span class="pull-right">dodací list č. D123</span>
+</h3>
+<table class="table table-bordered dlist">
+    <tr>
+        <th>Dodavatel:</th>
+        <td>
+            {$settings->get('faktura.jmeno')}<br>
+            {$settings->get('faktura.adresa')|nl2br|noescape}<br>
+            <strong>IČ:</strong> {$settings->get('faktura.ico')}<br>
+            <strong>DIČ:</strong> {$settings->get('faktura.dic')}
+        </td>
+    </tr>
+    <tr>
+        <th>Odběratel:</th>
+        <td>
+            {$order->jmeno}<br>
+            {$order->adresa|nl2br|noescape}<br>
+            {if $order->ico}<strong>IČ:</strong> {$order->ico}<br>{/if}
+            {if $order->dic}<strong>DIČ:</strong> {$order->dic}<br>{/if}
+        </td>
+    </tr>
+    <tr>
+        <th>Kryokapalina:</th>
+        <td>{$order->produkty->nazev}</td>
+    </tr>
+    <tr>
+        <th>
+            Dodané množství:
+        </th>
+        <td>
+            {$order->objem} l
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Vrácené množství:
+        </th>
+        <td>
+
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Spotřeba:
+        </th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Číslo nádoby:</th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Podpis dodavatele:</th>
+        <td></td>
+    </tr>
+    <tr>
+        <th>Podpis odběratele:</th>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            <img src="https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl={plink //Kryo:qrorder $order->id}&choe=UTF-8">
+        </td>
+        <td></td>
+    </tr>
+</table>

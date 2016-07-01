@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 
+use App\Controls\IDListControlFactory;
 use App\Controls\IOrdersGridControlFactory;
 use App\Model\NotificationMail;
 use App\Model\OrderManager;
@@ -31,6 +32,9 @@ class KryoPresenter extends BasePresenter
     /** @var IOrdersGridControlFactory @inject */
     public $ordersGridControlFactory;
 
+    /** @var IDListControlFactory @inject */
+    public $dlistControlFactory;
+
     /** @var NotificationMail */
     private $notificationMailer;
 
@@ -42,6 +46,11 @@ class KryoPresenter extends BasePresenter
         parent::startup();
 
         $this->notificationMailer = new NotificationMail($this->createTemplate(), $this->smtpMailer);
+    }
+    
+    function actionQrorder($id)
+    {
+        
     }
 
     /**
@@ -167,6 +176,9 @@ class KryoPresenter extends BasePresenter
             ->limit(10);
     }
 
+    /**
+     * @return \App\Controls\OrdersGridControl
+     */
     protected function createComponentOrdersGrid()
     {
         $grid = $this->ordersGridControlFactory->create();
@@ -174,6 +186,47 @@ class KryoPresenter extends BasePresenter
         $grid->setModel($this->orderManager->getOrders());
 
         return $grid;
+    }
+
+    /**
+     * @return \App\Controls\DListControl
+     */
+    protected function createComponentDlist()
+    {
+        $control = $this->dlistControlFactory->create();
+
+        return $control;
+    }
+
+    /**
+     * @return Form
+     */
+    protected function createComponentDlistForm()
+    {
+        $form = new Form();
+
+        $form->addText('obj_id', 'číslo objednávky')
+            ->setRequired(FORM_REQUIRED);
+        $form->addSubmit('process', 'Odeslat');
+
+        $form->onSuccess[] = function (Form $form, $values) {
+            $order = $this->orderManager->find($values->obj_id);
+            if (!$order) {
+                $form->addError('objednávka č. ' . $values->obj_id . ' nebyla nalezena.');
+
+                return;
+            }
+
+            if ($order->objednavky_stav_id != OrderManager::ORDER_STATUS_COMPLETED) {
+                $form->addError('objednávka č. ' . $values->obj_id . ' je označena jako ' . $order->objednavky_stav->nazev . ' - nelze tisknout dodací list.');
+            }
+
+            $this['dlist']->setOrder($order);
+
+            $this->template->dlist = true;
+        };
+
+        return BootstrapForm::makeBootstrap($form);
     }
 
     /**

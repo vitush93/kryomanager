@@ -1,0 +1,24 @@
+{block content}
+
+    {if isset($dlist)}
+
+        {control dlist}
+
+        <script>
+            window.print();
+        </script>
+    {else}
+        <div class="row">
+            <div class="col-lg-4"></div>
+            <div class="col-lg-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Tisk dodacího listu</div>
+                    <div class="panel-body">
+                        {control dlistForm}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4"></div>
+        </div>
+    {/if}
+{/block}
