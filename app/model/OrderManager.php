@@ -216,6 +216,7 @@ class OrderManager extends Object
             ->select('
             objednavky.id AS id,
             objednavky.created AS created, 
+            objednavky.datum_vyzvednuti AS datum_vyzvednuti,
             objednavky.objem AS objem, 
             objednavky.objem_vraceno AS objem_vraceno, 
             objednavky.jmeno AS jmeno, 

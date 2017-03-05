@@ -63,6 +63,7 @@ class OrdersGridControl extends Control
 
         $grid->addColumnNumber('id', '#')->setSortable();
         $grid->addColumnDate('created', 'Datum', 'j.n.Y H:i')->setSortable();
+        $grid->addColumnDate('datum_vyzvednuti', 'Datum vyzvednutí', 'j.n.Y H:i')->setSortable();
         $grid->addColumnText('produkt', 'Kryokapalina')->setSortable();
         $grid->addColumnText('jmeno', 'Jméno')->setSortable();
         $grid->addColumnText('instituce', 'Instituce')->setSortable();
