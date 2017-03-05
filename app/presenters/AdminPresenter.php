@@ -332,46 +332,4 @@ class AdminPresenter extends BasePresenter
 
         return $grid;
     }
-
-    /**
-     * @return Form
-     */
-    protected function createComponentCompleteOrderForm()
-    {
-        $form = new Form();
-
-        $form->addText('obj_id', '#')
-            ->addRule(Form::INTEGER, 'Zadejte celé číslo.')
-            ->setRequired(FORM_REQUIRED);
-        $form->addSubmit('process', 'Vyřídit');
-
-        $form->onSuccess[] = function (Form $form, $values) {
-            $this->actionComplete($values->obj_id);
-        };
-
-        return BootstrapForm::makeBootstrap($form);
-    }
-
-    /**
-     * @return Form
-     */
-    protected function createComponentDoneOrderForm()
-    {
-        $form = new Form();
-
-        $form->addText('obj_id', '#')
-            ->addRule(Form::INTEGER, 'Zadejte celé číslo.')
-            ->setRequired(FORM_REQUIRED);
-        $form->addText('returned', 'Vráceno')
-            ->addRule(Form::FLOAT, 'Zadejte číslo.')
-            ->setRequired(FORM_REQUIRED)
-            ->setDefaultValue(0);
-        $form->addSubmit('process', 'Dokončit');
-
-        $form->onSuccess[] = function (Form $form, $values) {
-            $this->actionFinish($values->obj_id, $values->returned);
-        };
-
-        return BootstrapForm::makeBootstrap($form);
-    }
 }
