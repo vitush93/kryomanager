@@ -25,15 +25,25 @@ class OrdersGridControl extends Control
     /** @var null|IRow */
     private $orderDetail = null;
 
+    /** @var null|IRow */
+    private $dlistData = null;
+
+    /** @var IDListControlFactory */
+    private $dlistControlFactory;
+
     /**
      * OrdersGridControl constructor.
      * @param Context $context
      * @param OrderManager $orderManager
+     * @param IDListControlFactory $IDListControlFactory
      */
-    function __construct(Context $context, OrderManager $orderManager)
+    function __construct(Context $context, OrderManager $orderManager, IDListControlFactory $IDListControlFactory)
     {
+        parent::__construct();
+
         $this->db = $context;
         $this->orderManager = $orderManager;
+        $this->dlistControlFactory = $IDListControlFactory;
     }
 
     /**
@@ -202,6 +212,12 @@ class OrdersGridControl extends Control
     function handleBack()
     {
         $this->orderDetail = null;
+        $this->dlistData = null;
+    }
+
+    function handleDlist($id)
+    {
+        $this->dlistData = $this->orderManager->find($id);
     }
 
     function render()
@@ -209,11 +225,22 @@ class OrdersGridControl extends Control
         if ($this->orderDetail) {
             $this->template->o = $this->orderDetail;
             $this->template->setFile(__DIR__ . '/detail.latte');
+        } else if ($this->dlistData) {
+            $this->template->setFile(__DIR__ . '/dlist.latte');
         } else {
             $this->template->setFile(__DIR__ . '/OrdersGrid.latte');
         }
 
         $this->template->render();
+    }
+
+    protected function createComponentDlist()
+    {
+        $dlist = $this->dlistControlFactory->create();
+
+        $dlist->setOrder($this->dlistData);
+
+        return $dlist;
     }
 }
 
