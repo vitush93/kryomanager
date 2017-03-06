@@ -56,7 +56,9 @@ CREATE TABLE `objednavky` (
   `stornovano` timestamp NULL DEFAULT NULL,
   `dokonceno` timestamp NULL DEFAULT NULL,
   `objem` decimal(19,4) NOT NULL,
+  `vaha` decimal(19,4) DEFAULT NULL,
   `objem_vraceno` decimal(19,4) NOT NULL DEFAULT '0.0000',
+  `vaha_vraceno` decimal(19,4) DEFAULT NULL,
   `datum_vyzvednuti` datetime NOT NULL,
   `jmeno` varchar(255) NOT NULL,
   `adresa` text,
@@ -140,4 +142,4 @@ CREATE TABLE `uzivatele` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2016-07-01 09:22:25
+-- 2017-03-06 16:08:02
