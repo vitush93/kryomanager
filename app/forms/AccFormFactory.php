@@ -58,6 +58,13 @@ class AccFormFactory extends Object
         $form->addTextArea('adresa', 'Fakturační adresa', null, 5)
             ->setDefaultValue($this->user->adresa)
             ->setRequired(FORM_REQUIRED);
+        $form->addText('ico', 'IČO')
+            ->setDefaultValue($this->user->ico);
+        $form->addText('DIC', 'DIČ')
+            ->setDefaultValue($this->user->dic);
+        $form->addText('ucet', 'Účet')
+            ->setDefaultValue($this->user->ucet);
+
         $form->addSubmit('process', 'Uložit');
 
         $form->onSuccess[] = $this->formSucceeded;
