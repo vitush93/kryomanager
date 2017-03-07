@@ -201,7 +201,8 @@ class UsersPresenter extends BasePresenter
         $grid->addFilterSelect('role', '', [
             '' => '',
             'admin' => 'Admin',
-            'user' => 'Uživatel'
+            'kryo' => 'Kryo',
+            'user' => 'Uživatel',
         ]);
 
         $grid->addActionHref('detail', 'Detail')
