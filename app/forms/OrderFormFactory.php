@@ -69,7 +69,6 @@ class OrderFormFactory extends Object
             ->addRule(Form::FLOAT, 'Objem musí být číslo.')
             ->setRequired(FORM_REQUIRED);
         $form->addText('datum_vyzvednuti', 'Datum')
-            ->setDefaultValue('zítra')
             ->setRequired(FORM_REQUIRED)
             ->setOption('description', 'Očekávané datum vyzvednutí.');
         $form->addUpload('pdf', 'Soubor s objednávkou')
@@ -93,15 +92,11 @@ class OrderFormFactory extends Object
             }
 
             try {
-                if ($values->datum_vyzvednuti == 'zítra') {
-                    $datum_vyzvednuti = new DateTime('tomorrow');
-                } else {
-                    $dnes = new DateTime();
-                    $datum_vyzvednuti = new DateTime($values->datum_vyzvednuti);
+                $dnes = new DateTime();
+                $datum_vyzvednuti = new DateTime($values->datum_vyzvednuti);
 
-                    if ($datum_vyzvednuti < $dnes) {
-                        throw new InvalidArgumentException;
-                    }
+                if ($datum_vyzvednuti < $dnes) {
+                    throw new InvalidArgumentException;
                 }
             } catch (\Exception $e) {
                 $form->addError('Zadejte prosím platné budoucí datum.');
