@@ -17,9 +17,10 @@ class OrderManager extends Object
     const TABLE_PRODUCTS = 'produkty';
 
     const ORDER_STATUS_PENDING = 1,
-        ORDER_STATUS_CANCELLED = 2,
-        ORDER_STATUS_COMPLETED = 3,
-        ORDER_STATUS_FINISHED = 4;
+        ORDER_STATUS_CONFIRMED = 2,
+        ORDER_STATUS_CANCELLED = 3,
+        ORDER_STATUS_COMPLETED = 4,
+        ORDER_STATUS_FINISHED = 5;
 
     const PRODUCT_HELIUM = 1,
         PRODUCT_NITROGEN = 2;

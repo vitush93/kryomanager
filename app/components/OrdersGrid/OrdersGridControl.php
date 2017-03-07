@@ -123,11 +123,13 @@ class OrdersGridControl extends Control
         $grid->addFilterSelect('stav', '', [
             '' => '',
             'pending' => 'nevyřízená',
+            'confirmed' => 'potvrzená',
             'cancelled' => 'stornovaná',
             'completed' => 'vyřízená',
             'done' => 'dokončená'
         ])->setCondition([
             'pending' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_PENDING],
+            'confirmed' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_CONFIRMED],
             'cancelled' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_CANCELLED],
             'completed' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_COMPLETED],
             'done' => ['objednavky_stav_id', '= ?', OrderManager::ORDER_STATUS_FINISHED]

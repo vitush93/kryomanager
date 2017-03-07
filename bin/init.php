@@ -37,6 +37,7 @@ $skupiny = [
 
 $objednavky_stav = [
     'nevyřízená',
+    'potvrzená',
     'stornovaná',
     'vyřízená',
     'dokončená'
