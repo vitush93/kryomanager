@@ -50,8 +50,7 @@ class InstitutionManager
     function createGroup($groupName)
     {
         $this->getGroups()->insert([
-            'nazev' => $groupName,
-            'instituce_id' => 1
+            'nazev' => $groupName
         ]);
     }
 

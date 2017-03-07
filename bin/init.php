@@ -106,7 +106,6 @@ if ($db->table('skupiny')->count() == 0) {
     foreach (array_keys($skupiny) as $inst) {
         foreach ($skupiny[$inst] as $sk) {
             $db->table('skupiny')->insert([
-                'instituce_id' => $inst,
                 'nazev' => $sk
             ]);
         }

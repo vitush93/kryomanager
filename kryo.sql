@@ -103,13 +103,10 @@ CREATE TABLE `produkty` (
 DROP TABLE IF EXISTS `skupiny`;
 CREATE TABLE `skupiny` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `instituce_id` int(11) NOT NULL,
   `nazev` varchar(255) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `nazev` (`nazev`),
-  KEY `instituce_id` (`instituce_id`),
-  CONSTRAINT `skupiny_ibfk_1` FOREIGN KEY (`instituce_id`) REFERENCES `instituce` (`id`)
+  UNIQUE KEY `nazev` (`nazev`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -147,4 +144,4 @@ CREATE TABLE `uzivatele` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2017-03-07 13:49:58
+-- 2017-03-07 13:59:08
