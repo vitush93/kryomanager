@@ -75,12 +75,14 @@ class OrderFormFactory extends Object
         $form->addUpload('pdf', 'Soubor s objednávkou')
             ->setOption('description', 'Volitelné pole: soubor s vaší objednávkou');
 
-        if ($this->user->instituce->id == 1) { // check if user is external
-            $form->addTextArea('adresa', 'Adresa', 10, 4);
-            $form->addText('ico', 'IČO');
-            $form->addText('dic', 'DIČ');
-            $form->addText('ucet', 'Číslo účtu');
-        }
+        $form->addTextArea('adresa', 'Adresa', 10, 4)
+            ->setDefaultValue($this->user->adresa);
+        $form->addText('ico', 'IČO')
+            ->setDefaultValue($this->user->ico);
+        $form->addText('dic', 'DIČ')
+            ->setDefaultValue($this->user->dic);
+        $form->addText('ucet', 'Číslo účtu')
+            ->setDefaultValue($this->user->ucet);
 
         $form->addSubmit('process', 'Odeslat');
 
