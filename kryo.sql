@@ -107,6 +107,7 @@ CREATE TABLE `skupiny` (
   `nazev` varchar(255) NOT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `nazev` (`nazev`),
   KEY `instituce_id` (`instituce_id`),
   CONSTRAINT `skupiny_ibfk_1` FOREIGN KEY (`instituce_id`) REFERENCES `instituce` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -146,4 +147,4 @@ CREATE TABLE `uzivatele` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2017-03-07 13:10:51
+-- 2017-03-07 13:49:58

@@ -11,6 +11,7 @@ use Grido\Components\Filters\Filter;
 use Grido\Grid;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
+use Nette\Database\UniqueConstraintViolationException;
 use Nette\Security\Passwords;
 
 class UsersPresenter extends BasePresenter
@@ -209,5 +210,29 @@ class UsersPresenter extends BasePresenter
             ->setIcon('pencil');
 
         return $grid;
+    }
+
+    /**
+     * @return Form
+     */
+    protected function createComponentNewGroupForm()
+    {
+        $form = new Form();
+
+        $form->addText('nazev', 'Název')
+            ->setRequired(FORM_REQUIRED);
+        $form->addSubmit('process', 'Vytvořit');
+
+        $form->onSuccess[] = function (Form $form, $values) {
+            try {
+                $this->institutionManager->createGroup($values->nazev);
+            } catch (UniqueConstraintViolationException $e) {
+                $form->addError('Skupina s tímto názvem již existuje.');
+
+                return;
+            }
+        };
+
+        return BootstrapForm::makeBootstrap($form);
     }
 }

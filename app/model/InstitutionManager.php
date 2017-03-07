@@ -47,6 +47,14 @@ class InstitutionManager
             ->fetch();
     }
 
+    function createGroup($groupName)
+    {
+        $this->getGroups()->insert([
+            'nazev' => $groupName,
+            'instituce_id' => 1
+        ]);
+    }
+
     function findGroup($id)
     {
         return $this->getGroups()
