@@ -55,6 +55,9 @@ class AccFormFactory extends Object
             ->setOmitted()
             ->addConditionOn($form['heslo'], Form::FILLED)
             ->addRule(Form::EQUAL, 'Hesla se neshodují.', $form['heslo']);
+        $form->addTextArea('adresa', 'Fakturační adresa', null, 5)
+            ->setDefaultValue($this->user->adresa)
+            ->setRequired(FORM_REQUIRED);
         $form->addSubmit('process', 'Uložit');
 
         $form->onSuccess[] = $this->formSucceeded;
