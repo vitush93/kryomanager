@@ -1,8 +1,16 @@
 parameters:
 
 database:
-	dsn: 'mysql:host=127.0.0.1;dbname=database'
-	user:
-	password:
-	options:
-		lazy: yes
+    dsn: 'mysql:host=127.0.0.1;dbname=database'
+    user:
+    password:
+    options:
+        lazy: yes
+
+mail:
+    smtp: true
+    host:
+    port:
+    username:
+    password:
+    secure: ssl # povolené hodnoty jsou ssl, tls nebo null
