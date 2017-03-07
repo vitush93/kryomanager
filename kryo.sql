@@ -131,6 +131,7 @@ CREATE TABLE `uzivatele` (
   `email` varchar(255) NOT NULL,
   `heslo` varchar(255) NOT NULL,
   `jmeno` varchar(255) NOT NULL,
+  `adresa` text,
   `role` varchar(255) NOT NULL DEFAULT 'user',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -142,4 +143,4 @@ CREATE TABLE `uzivatele` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2017-03-06 16:08:02
+-- 2017-03-07 12:55:26
