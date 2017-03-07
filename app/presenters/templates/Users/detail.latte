@@ -43,7 +43,9 @@
                         <tbody>
                         {foreach $objednavky as $o}
                         <tr>
-                            <td>{$o->id}</td>
+                            <td>
+                                <a href="/admin/orders?ordersGrid-id={$o->id}&do=ordersGrid-detail">{$o->id}</a>
+                            </td>
                             <td>{$o->produkty->nazev}</td>
                             <td>{$o->objem}</td>
                             <td>{$o->created|date:'j.n.Y H:i'}</td>
