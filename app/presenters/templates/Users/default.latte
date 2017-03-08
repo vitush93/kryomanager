@@ -1,6 +1,6 @@
 {block content}
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-4 col-md-6">
             <div class="panel panel-success">
                 <div class="panel-heading">
                     Vytvořit uživatele
@@ -10,13 +10,40 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                    Vytvořit skupinu
+        <div class="col-lg-8 col-md-6">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            Vytvořit fakturační skupinu
+                        </div>
+                        <div class="panel-body">
+                            {control newGroupForm}
+                        </div>
+                    </div>
                 </div>
-                <div class="panel-body">
-                    {control newGroupForm}
+                <div class="col-lg-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            Existující fakturační skupiny
+                        </div>
+                        <div class="panel-body">
+                            <table class="table">
+                                <tr>
+                                    <th>Název</th>
+                                    <th>Akce</th>
+                                </tr>
+                                {foreach $skupiny as $s}
+                                <tr>
+                                    <td>{$s->nazev}</td>
+                                    <td>
+                                        <a href="{link deleteGroup! $s->id}"><i class="fa fa-times"></i></a>
+                                    </td>
+                                </tr>
+                                {/foreach}
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

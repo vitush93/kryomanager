@@ -11,6 +11,7 @@ use Grido\Components\Filters\Filter;
 use Grido\Grid;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
+use Nette\Database\ConstraintViolationException;
 use Nette\Database\UniqueConstraintViolationException;
 use Nette\Security\Passwords;
 
@@ -68,12 +69,35 @@ class UsersPresenter extends BasePresenter
     }
 
     /**
+     * @param $id
+     */
+    function handleDeleteGroup($id)
+    {
+        try {
+            $this->institutionManager->removeGroup($id);
+
+            $this->flashMessage('Fakturační skupina byla odstraněna.', 'info');
+        } catch (ConstraintViolationException $exception) {
+            $group = $this->institutionManager->findGroup($id);
+
+            $this->flashMessage("Skupinu '$group->nazev' nelze smazat: skupina obsahuje uživatele.", 'danger');
+        }
+
+        $this->redirect('this');
+    }
+
+    /**
      * @param int $id user's id.
      */
     function renderDetail($id)
     {
         $this->template->u = $this->userManager->find($id);
         $this->template->objednavky = $this->orderManager->userOrders($id)->order('created', 'DESC');
+    }
+
+    function renderDefault()
+    {
+        $this->template->skupiny = $this->institutionManager->getGroups();
     }
 
     /**

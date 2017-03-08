@@ -61,6 +61,11 @@ class InstitutionManager
             ->fetch();
     }
 
+    function removeGroup($id)
+    {
+        $this->getGroups()->where('id', $id)->delete();
+    }
+
     function groupPairs()
     {
         return $this->getGroups()
