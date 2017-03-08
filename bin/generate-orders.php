@@ -24,7 +24,8 @@ foreach ($db->table('uzivatele')->where('role', 'user') as $user) {
             'skupiny_id' => $user->skupiny_id,
             'instituce_id' => $user->instituce_id,
             'objednavky_stav_id' => rand(1, 4),
-            'created' => date('Y-m-d H:i:s', mt_rand(strtotime('01/01/2016'), strtotime('06/10/2016'))),
+            'created' => date('Y-m-d H:i:s', mt_rand(strtotime('-6 months'), strtotime('-10 days'))),
+            'datum_vyzvednuti' => date('Y-m-d H:i:s', mt_rand(strtotime('-5 months'), strtotime('+1 month'))),
             'objem' => rand(7, 50),
             'jmeno' => $user->jmeno
         ]);
