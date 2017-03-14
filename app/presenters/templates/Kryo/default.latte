@@ -72,7 +72,7 @@
                         </tr>
                         {foreach $today as $o}
                             <tr {if $o->stav_id == 2}class="order-cancelled"{/if}>
-                                <td>#{$o->id}</td>
+                                <td><a href="/kryo/orders?ordersGrid-id={$o->id}&do=ordersGrid-detail">#{$o->id}</a></td>
                                 <td>{$o->created|date:'j.n.Y H:i'}</td>
                                 <td>{$o->produkt}</td>
                                 <td>{$o->objem} l</td>
@@ -114,7 +114,7 @@
                         </tr>
                         {foreach $tomorrow as $o}
                             <tr {if $o->stav_id == 2}class="order-cancelled"{/if}>
-                                <td>#{$o->id}</td>
+                                <td><a href="/kryo/orders?ordersGrid-id={$o->id}&do=ordersGrid-detail">#{$o->id}</a></td>
                                 <td>{$o->created|date:'j.n.Y H:i'}</td>
                                 <td>{$o->produkt}</td>
                                 <td>{$o->objem} l</td>
