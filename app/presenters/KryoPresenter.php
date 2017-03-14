@@ -47,11 +47,6 @@ class KryoPresenter extends BasePresenter
 
         $this->notificationMailer = new NotificationMail($this->createTemplate(), $this->smtpMailer);
     }
-    
-    function actionQrorder($id)
-    {
-        
-    }
 
     /**
      * Mark order as done.
@@ -87,31 +82,6 @@ class KryoPresenter extends BasePresenter
             }
 
             $this->redirect('this');
-        }
-    }
-
-    /**
-     * Mark order as cancelled.
-     *
-     * @param $id
-     */
-    function actionCancel($id)
-    {
-        $affected = $this->orderManager->cancelPendingOrder($id);
-
-        if (!$this->isAjax()) {
-            if ($affected == 0) {
-                $this->flashMessage("Objednávka č. $id neexistuje nebo nebyla označena jako nevyřízená.", 'danger');
-            } else {
-                $this->flashMessage('Objednávka byla zrušena.', 'info');
-            }
-
-            $ref = $this->getParameter('ref');
-            if ($ref) {
-                $this->redirect($ref);
-            } else {
-                $this->redirect('default');
-            }
         }
     }
 
