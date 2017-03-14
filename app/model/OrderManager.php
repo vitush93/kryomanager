@@ -159,10 +159,10 @@ class OrderManager extends Object
      * @param int $id
      * @return int
      */
-    function completePendingOrder($id)
+    function completeConfirmedOrder($id)
     {
         return $this->order($id)
-            ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING)
+            ->where('objednavky_stav_id', self::ORDER_STATUS_CONFIRMED)
             ->update([
                 'objednavky_stav_id' => self::ORDER_STATUS_COMPLETED,
                 'vyrizeno' => new DateTime()

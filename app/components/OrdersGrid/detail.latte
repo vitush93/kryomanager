@@ -2,12 +2,12 @@
     <div class="col-lg-12">
         <div class="pull-left"><a href="{link back!}" class="btn btn-primary">zpět</a><br><br></div>
 
-        <div class="pull-right">
-            <a href="{link pending! $o->id}" class="btn btn-info">nastavit jako nevyřízená</a>
-            <a href="{link complete! $o->id}" class="btn btn-success">nastavit jako vyřízená</a>
-            <a href="{link cancel! $o->id}" class="btn btn-danger">nastavit jako stornovaná</a>
-            <p class="help-block" style="text-align: right;">ruční změna stavu zde nepošle e-mail odběrateli</p>
-        </div>
+        {*<div class="pull-right">*}
+            {*<a href="{link pending! $o->id}" class="btn btn-info">nastavit jako nevyřízená</a>*}
+            {*<a href="{link complete! $o->id}" class="btn btn-success">nastavit jako vyřízená</a>*}
+            {*<a href="{link cancel! $o->id}" class="btn btn-danger">nastavit jako stornovaná</a>*}
+            {*<p class="help-block" style="text-align: right;">ruční změna stavu zde nepošle e-mail odběrateli</p>*}
+        {*</div>*}
     </div>
 </div>
 
@@ -74,6 +74,19 @@
 
 <div class="row">
     <div class="col-lg-12">
-        <a href="{link dlist! $o->id}" class="btn btn-primary">tisk dodacího listu</a>
+        <h2>Akce</h2>
+        <br>
+
+        <?php $stav = $o->objednavky_stav_id; ?>
+        <a href="{link dlist! $o->id}" class="btn btn-primary"><i class="fa fa-print"></i> tisk dodacího listu</a>
+        {if $stav == 1}
+            <a href="{link confirm!}" class="btn btn-warning"><i class="fa fa-envelope"></i> potvrdit objednávku</a>
+        {/if}
+        {if $stav == 2}
+            <a href="{plink Admin:complete 'id' => $o->id, 'ref' => $this->presenter->name.':'.$this->presenter->action}" class="btn btn-success"><i class="fa fa-check"></i> vyřídit objednávku</a>
+        {/if}
+        {if $stav == 1 || $stav == 2}
+            <a href="{plink Admin:cancel 'id' => $o->id, 'ref' => $this->presenter->name.':'.$this->presenter->action}" class="btn btn-danger"><i class="fa fa-times"></i> stornovat objednávku</a>
+        {/if}
     </div>
 </div>

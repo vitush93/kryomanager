@@ -99,7 +99,7 @@ class AdminPresenter extends BasePresenter
     {
         $order = $this->orderManager->find($id);
         $previousOrderStatus = $order->objednavky_stav_id;
-        $affected = $this->orderManager->completePendingOrder($id);
+        $affected = $this->orderManager->completeConfirmedOrder($id);
 
         if ($affected > 0) {
             try {
