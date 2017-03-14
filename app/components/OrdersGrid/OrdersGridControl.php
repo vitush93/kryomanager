@@ -3,13 +3,16 @@
 namespace App\Controls;
 
 
+use App\Model\NotificationMail;
 use App\Model\OrderManager;
+use App\Model\SmtpMailer;
 use Grido\Components\Filters\Filter;
 use Grido\Grid;
 use Nette\Application\UI\Control;
 use Nette\Database\Context;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
+use Nette\Mail\SmtpException;
 use Nette\Utils\Html;
 
 class OrdersGridControl extends Control
@@ -22,6 +25,9 @@ class OrdersGridControl extends Control
 
     /** @var OrderManager */
     private $orderManager;
+
+    /** @var SmtpMailer */
+    private $smtpMailer;
 
     /** @var null|IRow */
     private $orderDetail = null;
@@ -37,14 +43,16 @@ class OrdersGridControl extends Control
      * @param Context $context
      * @param OrderManager $orderManager
      * @param IDListControlFactory $IDListControlFactory
+     * @param SmtpMailer $smtpMailer
      */
-    function __construct(Context $context, OrderManager $orderManager, IDListControlFactory $IDListControlFactory)
+    function __construct(Context $context, OrderManager $orderManager, IDListControlFactory $IDListControlFactory, SmtpMailer $smtpMailer)
     {
         parent::__construct();
 
         $this->db = $context;
         $this->orderManager = $orderManager;
         $this->dlistControlFactory = $IDListControlFactory;
+        $this->smtpMailer = $smtpMailer;
     }
 
     /**
@@ -159,22 +167,31 @@ class OrdersGridControl extends Control
                 return $this->link('detail!', $item->id);
             })
             ->setIcon('search');
+
         $grid->addActionHref('cancel', 'Storno')
             ->setConfirm('Opravdu stornovat objednávku?')
             ->setIcon('remove')
             ->setCustomRender(function ($item) {
-                if ($item->stav_id == OrderManager::ORDER_STATUS_PENDING) {
-                    return '<a class="grid-action-cancel btn btn-danger btn-xs btn-mini" href="' . $this->presenter->link('Admin:cancel', ['id' => $item->id, 'ref' => 'orders']) . '" data-grido-confirm="Opravdu stornovat objednávku?"><i class="glyphicon glyphicon-remove fa fa-remove icon-remove"></i> Storno</a>';
+                if ($item->stav_id == OrderManager::ORDER_STATUS_PENDING || $item->stav_id == OrderManager::ORDER_STATUS_CONFIRMED) {
+                    return '<a class="grid-action-cancel btn btn-danger btn-xs btn-mini" href="' . $this->presenter->link('Admin:cancel', ['id' => $item->id, 'ref' => $this->presenter->name.':'.$this->presenter->action]) . '" data-grido-confirm="Opravdu stornovat objednávku?"><i class="fa fa-remove"></i> Storno</a>';
                 } else {
                     return '';
                 }
             });
+
         $grid->addActionHref('complete', 'Vyřídit')
-            ->setConfirm('Označit objednávku jako vyřízenou?')
-            ->setIcon('ok')
+            ->setCustomRender(function ($item) {
+                if ($item->stav_id == OrderManager::ORDER_STATUS_CONFIRMED) {
+                    return '<a class="grid-action-complete btn btn-success btn-xs btn-mini" href="' . $this->presenter->link('Admin:complete', ['id' => $item->id, 'ref' => $this->presenter->name.':'.$this->presenter->action]) . '" data-grido-confirm="Označit objednávku jako vyřízenou?"><i class="fa fa-check"></i> Vyřídit</a>';
+                } else {
+                    return '';
+                }
+            });
+
+        $grid->addActionHref('confirm', 'Potvrdit')
             ->setCustomRender(function ($item) {
                 if ($item->stav_id == OrderManager::ORDER_STATUS_PENDING) {
-                    return '<a class="grid-action-complete btn btn-success btn-xs btn-mini" href="' . $this->presenter->link('Admin:complete', ['id' => $item->id, 'ref' => 'orders']) . '" data-grido-confirm="Označit objednávku jako vyřízenou?"><i class="glyphicon glyphicon-ok fa fa-ok icon-ok"></i> Vyřídit</a>';
+                    return '<a class="grid-action-complete btn btn-warning  btn-xs btn-mini" href="' . $this->link('confirm!', ['id' => $item->id]) . '" data-grido-confirm="Odeslat potvrzovací e-mail?"><i class="fa fa-envelope"></i> Potvrdit</a>';
                 } else {
                     return '';
                 }
@@ -182,7 +199,10 @@ class OrdersGridControl extends Control
 
         return $grid;
     }
-    
+
+    /**
+     * @param $id
+     */
     function handlePending($id)
     {
         $this->orderManager->setStatus($id, OrderManager::ORDER_STATUS_PENDING);
@@ -190,20 +210,66 @@ class OrdersGridControl extends Control
         $this->handleDetail($id);
     }
 
+    /**
+     * @param $id
+     */
     function handleCancel($id)
     {
         $this->orderManager->setStatus($id, OrderManager::ORDER_STATUS_CANCELLED);
 
         $this->handleDetail($id);
     }
-    
+
+    /**
+     * @return NotificationMail
+     */
+    private function createNotificationMailer()
+    {
+        return new NotificationMail($this->createTemplate(), $this->smtpMailer);
+    }
+
+    /**
+     * @param $id
+     */
+    function handleConfirm($id)
+    {
+        $affectedRowsCount = $this->orderManager->confirmPendingOrder($id);
+
+        if ($affectedRowsCount > 0) {
+            $notificationMailer = $this->createNotificationMailer();
+
+            $order = $this->orderManager->find($id);
+
+            try {
+                $notificationMailer
+                    ->addTo($order->uzivatele->email)
+                    ->setTemplateFile('confirmation.latte')
+                    ->setSubject('Objednávka potvrzena')
+                    ->setTemplateVar('order', $order)
+                    ->send();
+
+                $this->presenter->flashMessage('E-mail odeslán.', 'info');
+            } catch (SmtpException $exception) {
+                $this->presenter->flashMessage('E-mail se nepodařilo odeslat.', 'danger');
+
+                // error occurred - rollback status update
+                $this->orderManager->setStatus($order->id, OrderManager::ORDER_STATUS_PENDING);
+            }
+        }
+
+        $this->presenter->redirect('this');
+    }
+
+    /**
+     * @param $id
+     */
     function handleComplete($id)
     {
         $this->orderManager->setStatus($id, OrderManager::ORDER_STATUS_COMPLETED);
 
         $this->handleDetail($id);
     }
-    
+
     /**
      * @param int $id
      */
@@ -211,7 +277,7 @@ class OrdersGridControl extends Control
     {
         $this->orderDetail = $this->orderManager->find($id);
     }
-    
+
     function handleBack()
     {
         $this->orderDetail = null;

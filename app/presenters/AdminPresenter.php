@@ -13,6 +13,7 @@ use App\Model\SmtpMailer;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
+use Nette\Mail\SmtpException;
 
 class AdminPresenter extends BasePresenter
 {
@@ -96,25 +97,31 @@ class AdminPresenter extends BasePresenter
      */
     function actionComplete($id)
     {
+        $order = $this->orderManager->find($id);
+        $previousOrderStatus = $order->objednavky_stav_id;
         $affected = $this->orderManager->completePendingOrder($id);
 
         if ($affected > 0) {
-            $order = $this->orderManager->find($id);
-            $this->notificationMailer
-                ->addTo($order->uzivatele->email)
-                ->setTemplateFile('notification.latte')
-                ->setSubject('Objednávka byla vyřízena!')
-                ->setTemplateVar('order', $order)
-                ->send();
+            try {
+                $this->notificationMailer
+                    ->addTo($order->uzivatele->email)
+                    ->setTemplateFile('notification.latte')
+                    ->setSubject('Objednávka byla vyřízena!')
+                    ->setTemplateVar('order', $order)
+                    ->send();
+
+                if (!$this->isAjax()) {
+                    $this->flashMessage('Objednávka byla vyřízena.', 'success');
+                }
+            } catch (SmtpException $exception) {
+                $this->flashMessage('E-mail se nepodařilo odeslat.', 'danger');
+
+                // rollback order status
+                $this->orderManager->setStatus($id, $previousOrderStatus);
+            }
         }
 
         if (!$this->isAjax()) {
-            if ($affected == 0) {
-                $this->flashMessage("Objednávka č. $id neexistuje, nebyla označena jako nevyřízená nebo byla stornovaná.", 'danger');
-            } else {
-                $this->flashMessage('Objednávka byla vyřízena.', 'success');
-            }
-
             $ref = $this->getParameter('ref');
             if ($ref) {
                 $this->redirect($ref);
@@ -131,15 +138,31 @@ class AdminPresenter extends BasePresenter
      */
     function actionCancel($id)
     {
+        $order = $this->orderManager->find($id);
+        $previousOrderStatus = $order->objednavky_stav_id;
         $affected = $this->orderManager->cancelPendingOrder($id);
 
-        if (!$this->isAjax()) {
-            if ($affected == 0) {
-                $this->flashMessage("Objednávka č. $id neexistuje nebo nebyla označena jako nevyřízená.", 'danger');
-            } else {
-                $this->flashMessage('Objednávka byla zrušena.', 'info');
-            }
+        if ($affected > 0) {
+            try {
+                $this->notificationMailer
+                    ->addTo($order->uzivatele->email)
+                    ->setTemplateFile('storno.latte')
+                    ->setSubject('Objednávka byla stornována')
+                    ->setTemplateVar('order', $order)
+                    ->send();
 
+                if (!$this->isAjax()) {
+                    $this->flashMessage('Objednávka byla zrušena.', 'info');
+                }
+            } catch (SmtpException $exception) {
+                $this->flashMessage('E-mail se nepodařilo odeslat.', 'danger');
+
+                // rollback order status
+                $this->orderManager->setStatus($id, $previousOrderStatus);
+            }
+        }
+
+        if (!$this->isAjax()) {
             $ref = $this->getParameter('ref');
             if ($ref) {
                 $this->redirect($ref);

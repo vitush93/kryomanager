@@ -91,41 +91,6 @@ class KryoPresenter extends BasePresenter
     }
 
     /**
-     * Mark order as completed.
-     *
-     * @param int $id
-     */
-    function actionComplete($id)
-    {
-        $affected = $this->orderManager->completePendingOrder($id);
-
-        if ($affected > 0) {
-            $order = $this->orderManager->find($id);
-            $this->notificationMailer
-                ->addTo($order->uzivatele->email)
-                ->setTemplateFile('notification.latte')
-                ->setSubject('Objednávka byla vyřízena!')
-                ->setTemplateVar('order', $order)
-                ->send();
-        }
-
-        if (!$this->isAjax()) {
-            if ($affected == 0) {
-                $this->flashMessage("Objednávka č. $id neexistuje, nebyla označena jako nevyřízená nebo byla stornovaná.", 'danger');
-            } else {
-                $this->flashMessage('Objednávka byla vyřízena.', 'success');
-            }
-
-            $ref = $this->getParameter('ref');
-            if ($ref) {
-                $this->redirect($ref);
-            } else {
-                $this->redirect('default');
-            }
-        }
-    }
-
-    /**
      * Mark order as cancelled.
      *
      * @param $id

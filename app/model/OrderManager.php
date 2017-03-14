@@ -173,10 +173,23 @@ class OrderManager extends Object
      * @param int $id
      * @return int
      */
-    function cancelPendingOrder($id)
+    function confirmPendingOrder($id)
     {
         return $this->order($id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_PENDING)
+            ->update([
+                'objednavky_stav_id' => self::ORDER_STATUS_CONFIRMED
+            ]);
+    }
+
+    /**
+     * @param int $id
+     * @return int
+     */
+    function cancelPendingOrder($id)
+    {
+        return $this->order($id)
+            ->where('objednavky_stav_id = ? OR objednavky_stav_id = ?', self::ORDER_STATUS_PENDING, self::ORDER_STATUS_CONFIRMED)
             ->update([
                 'objednavky_stav_id' => self::ORDER_STATUS_CANCELLED,
                 'stornovano' => new DateTime()
