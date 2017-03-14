@@ -68,7 +68,6 @@
                             <th class="visible-lg">Instituce</th>
                             <th class="visible-lg">Skupina</th>
                             <th>Jméno</th>
-                            <th>Akce</th>
                         </tr>
                         {foreach $today as $o}
                             <tr {if $o->stav_id == 2}class="order-cancelled"{/if}>
@@ -79,15 +78,6 @@
                                 <td class="visible-lg">{$o->instituce}</td>
                                 <td class="visible-lg">{$o->skupina}</td>
                                 <td>{$o->jmeno}</td>
-                                <td>
-                                    {if $o->stav_id != 2}
-                                        <a href="{link Admin:complete id => $o->id, ref => 'Kryo:default'}" onclick="return confirm('Vyřídit objednávku?')"
-                                           title="vyřídit"><i class="fa fa-check"></i></a>
-                                        &nbsp;
-                                        <a href="{link Admin:cancel id => $o->id, ref => 'Kryo:default'}" onclick="return confirm('Stornovat objednávku?')"
-                                           title="stornovat"><i class="fa fa-times"></i></a>
-                                    {/if}
-                                </td>
                             </tr>
                         {/foreach}
                     </table>
@@ -110,7 +100,6 @@
                             <th class="visible-lg">Instituce</th>
                             <th class="visible-lg">Skupina</th>
                             <th>Jméno</th>
-                            <th>Akce</th>
                         </tr>
                         {foreach $tomorrow as $o}
                             <tr {if $o->stav_id == 2}class="order-cancelled"{/if}>
@@ -121,15 +110,6 @@
                                 <td class="visible-lg">{$o->instituce}</td>
                                 <td class="visible-lg">{$o->skupina}</td>
                                 <td>{$o->jmeno}</td>
-                                <td>
-                                    {if $o->stav_id != 2}
-                                        <a href="{link Admin:complete $o->id}" onclick="return confirm('Vyřídit objednávku?')"
-                                           title="vyřídit"><i class="fa fa-check"></i></a>
-                                        &nbsp;
-                                        <a href="{link Admin:cancel $o->id}" onclick="return confirm('Stornovat objednávku?')"
-                                           title="stornovat"><i class="fa fa-times"></i></a>
-                                    {/if}
-                                </td>
                             </tr>
                         {/foreach}
                     </table>
