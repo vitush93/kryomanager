@@ -25,6 +25,8 @@ class OrderManager extends Object
     const PRODUCT_HELIUM = 1,
         PRODUCT_NITROGEN = 2;
 
+    const HELIUM_LITERS_IN_KG = 8;
+
     /** @var Context */
     private $db;
 
@@ -128,16 +130,19 @@ class OrderManager extends Object
 
     /**
      * @param int $id
-     * @param float|int $returned_volume
+     * @param float|int $returned_weight
      * @return int
      */
-    function finishCompletedOrder($id, $returned_volume = 0)
+    function finishCompletedOrder($id, $returned_weight = 0)
     {
+        $returned_volume = $returned_weight * self::HELIUM_LITERS_IN_KG;
+
         return $this->order($id)
             ->where('objednavky_stav_id', self::ORDER_STATUS_COMPLETED)
             ->update([
                 'objednavky_stav_id' => self::ORDER_STATUS_FINISHED,
                 'objem_vraceno' => $returned_volume,
+                'vaha_vraceno' => $returned_weight,
                 'dokonceno' => new DateTime()
             ]);
     }

@@ -183,7 +183,7 @@ class KryoPresenter extends BasePresenter
         $form->addSubmit('process', 'Dokončit');
 
         $form->onSuccess[] = function (Form $form, $values) {
-            $this->actionFinish($values->obj_id, $values->returned);
+            // TODO
         };
 
         return BootstrapForm::makeBootstrap($form);
@@ -203,7 +203,7 @@ class KryoPresenter extends BasePresenter
         $form->addSubmit('process', 'Vyřídit');
 
         $form->onSuccess[] = function (Form $form, $values) {
-            $this->actionComplete($values->obj_id);
+            $this->redirect('Admin:complete', ['id' => $values->obj_id, 'ref' => "{$this->name}:{$this->action}"]);
         };
 
         return BootstrapForm::makeBootstrap($form);
