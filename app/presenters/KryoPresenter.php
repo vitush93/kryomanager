@@ -175,8 +175,8 @@ class KryoPresenter extends BasePresenter
             ->setOption('description', 'Číslo objednávky.')
             ->addRule(Form::INTEGER, 'Zadejte celé číslo.')
             ->setRequired(FORM_REQUIRED);
-        $form->addText('returned', 'Vráceno')
-            ->setOption('description', 'Vrácený objem v litrech.')
+        $form->addText('returned', 'Vráceno (kg)')
+            ->setOption('description', 'Váha po vrácení.')
             ->addRule(Form::FLOAT, 'Zadejte číslo.')
             ->setRequired(FORM_REQUIRED)
             ->setDefaultValue(0);
@@ -203,6 +203,15 @@ class KryoPresenter extends BasePresenter
         $form->addSubmit('process', 'Vyřídit');
 
         $form->onSuccess[] = function (Form $form, $values) {
+            $order = $this->orderManager->find($values->obj_id);
+            if ($order->objednavky_stav_id != OrderManager::ORDER_STATUS_CONFIRMED) {
+                // TODO maybe do these 2 steps automatically?
+
+                $this->flashMessage('Objednávku nelze vyřídit - objednávka není potvrzená.', 'danger');
+
+                return;
+            }
+
             $this->redirect('Admin:complete', ['id' => $values->obj_id, 'ref' => "{$this->name}:{$this->action}"]);
         };
 
