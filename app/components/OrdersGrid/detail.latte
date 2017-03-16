@@ -80,7 +80,7 @@
         <?php $stav = $o->objednavky_stav_id; ?>
         <a href="{link dlist! $o->id}" class="btn btn-primary"><i class="fa fa-print"></i> tisk dodacího listu</a>
         {if $stav == 1}
-            <a href="{link confirm!}" class="btn btn-warning"><i class="fa fa-envelope"></i> potvrdit objednávku</a>
+            <a href="{link confirm! $o->id}" class="btn btn-warning"><i class="fa fa-envelope"></i> potvrdit objednávku</a>
         {/if}
         {if $stav == 2}
             <a href="{plink Admin:complete 'id' => $o->id, 'ref' => $this->presenter->name.':'.$this->presenter->action}" class="btn btn-success"><i class="fa fa-check"></i> vyřídit objednávku</a>
