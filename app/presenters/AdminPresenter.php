@@ -49,44 +49,41 @@ class AdminPresenter extends BasePresenter
     }
 
     /**
-     * Mark order as done.
-     *
-     * @param int $id
-     * @param null|float $volume
+     * @param $order
      */
-    function actionFinish($id, $volume = null)
+    private function finishHeliumOrder($order)
     {
-        try {
-            $affected = $this->orderManager->finishOrder($id, $volume ? $volume : 0);
-        } catch (InvalidArgumentException $e) {
-            if (!$this->isAjax()) {
-                $this->flashMessage($e->getMessage(), 'danger');
-            }
+        $this->setView('helium');
 
-            return;
-        }
+        $this->template->order = $order;
 
+        $this['heliumOrderForm']->onSuccess[] = function (Form $form, $values) {
+            $id = $this->getParameter('id');
+
+            $this->orderManager->finishHeliumOrder($id, $values->weight);
+        };
+    }
+
+    /**
+     * @param $order
+     */
+    private function finishNitrogenOrder($order)
+    {
+        $this->orderManager->finishNitrogenOrder($order->id);
+    }
+
+    /**
+     * @param $id
+     */
+    function actionFinish($id)
+    {
         $order = $this->orderManager->find($id);
-        $this->notificationMailer
-            ->addTo($this->settings->get('faktura.uctarna'))
-            ->setTemplateFile('invoice.latte')
-            ->setSubject('Faktura')
-            ->setTemplateVar('order', $order)
-            ->send();
+        if ($order->produkty_id == OrderManager::PRODUCT_NITROGEN) {
+            $this->finishNitrogenOrder($order);
 
-        if (!$this->isAjax()) {
-            if ($affected == 0) {
-                $this->flashMessage("Objednávka č. $id neexistuje nebo byla stornovaná či je již dokončená.", 'danger');
-            } else {
-                $this->flashMessage('Objednávka byla dokončena.', 'success');
-            }
-
-            $ref = $this->getParameter('ref');
-            if ($ref) {
-                $this->redirect($ref);
-            } else {
-                $this->redirect('default');
-            }
+            $this->redirect($this->getParameter('ref'));
+        } else if ($order->produkty_id == OrderManager::PRODUCT_HELIUM) {
+            $this->finishHeliumOrder($order);
         }
     }
 
@@ -98,6 +95,11 @@ class AdminPresenter extends BasePresenter
     function actionComplete($id)
     {
         $order = $this->orderManager->find($id);
+
+        if ($order->produkty_id == OrderManager::PRODUCT_HELIUM) {
+            // TODO enter initial weight for helium
+        }
+
         $previousOrderStatus = $order->objednavky_stav_id;
         $affected = $this->orderManager->completeConfirmedOrder($id);
 
@@ -328,6 +330,21 @@ class AdminPresenter extends BasePresenter
         $form->addSubmit('process', 'Uložit');
 
         $form->onSuccess[] = $this->priceFormSucceeded;
+
+        return BootstrapForm::makeBootstrap($form);
+    }
+
+    /**
+     * @return Form
+     */
+    protected function createComponentHeliumOrderForm()
+    {
+        $form = new Form();
+
+        $form->addText('weight', 'Váha po vrácení (kg)')
+            ->addRule(Form::FLOAT, 'Zadejte platné číslo.')
+            ->setRequired(FORM_REQUIRED);
+        $form->addSubmit('process', 'Dokončit');;
 
         return BootstrapForm::makeBootstrap($form);
     }

@@ -173,7 +173,16 @@ class OrdersGridControl extends Control
             ->setIcon('remove')
             ->setCustomRender(function ($item) {
                 if ($item->stav_id == OrderManager::ORDER_STATUS_PENDING || $item->stav_id == OrderManager::ORDER_STATUS_CONFIRMED) {
-                    return '<a class="grid-action-cancel btn btn-danger btn-xs btn-mini" href="' . $this->presenter->link('Admin:cancel', ['id' => $item->id, 'ref' => $this->presenter->name.':'.$this->presenter->action]) . '" data-grido-confirm="Opravdu stornovat objednávku?"><i class="fa fa-remove"></i> Storno</a>';
+                    return '<a class="grid-action-cancel btn btn-danger btn-xs btn-mini" href="' . $this->presenter->link('Admin:cancel', ['id' => $item->id, 'ref' => $this->presenter->name . ':' . $this->presenter->action]) . '" data-grido-confirm="Opravdu stornovat objednávku?"><i class="fa fa-remove"></i> Storno</a>';
+                } else {
+                    return '';
+                }
+            });
+
+        $grid->addActionHref('finish', 'Dokončit')
+            ->setCustomRender(function ($item) {
+                if ($item->stav_id == OrderManager::ORDER_STATUS_COMPLETED) {
+                    return '<a class="grid-action-complete btn btn-info btn-xs btn-mini" href="' . $this->presenter->link('Admin:finish', ['id' => $item->id, 'ref' => $this->presenter->name . ':' . $this->presenter->action]) . '" data-grido-confirm="Označit objednávku jako dokončenou?"><i class="fa fa-list"></i> Dokončit</a>';
                 } else {
                     return '';
                 }
@@ -182,7 +191,7 @@ class OrdersGridControl extends Control
         $grid->addActionHref('complete', 'Vyřídit')
             ->setCustomRender(function ($item) {
                 if ($item->stav_id == OrderManager::ORDER_STATUS_CONFIRMED) {
-                    return '<a class="grid-action-complete btn btn-success btn-xs btn-mini" href="' . $this->presenter->link('Admin:complete', ['id' => $item->id, 'ref' => $this->presenter->name.':'.$this->presenter->action]) . '" data-grido-confirm="Označit objednávku jako vyřízenou?"><i class="fa fa-check"></i> Vyřídit</a>';
+                    return '<a class="grid-action-complete btn btn-success btn-xs btn-mini" href="' . $this->presenter->link('Admin:complete', ['id' => $item->id, 'ref' => $this->presenter->name . ':' . $this->presenter->action]) . '" data-grido-confirm="Označit objednávku jako vyřízenou?"><i class="fa fa-check"></i> Vyřídit</a>';
                 } else {
                     return '';
                 }

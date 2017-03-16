@@ -49,43 +49,6 @@ class KryoPresenter extends BasePresenter
     }
 
     /**
-     * Mark order as done.
-     *
-     * @param int $id
-     * @param null|float $volume
-     */
-    function actionFinish($id, $volume = null)
-    {
-        try {
-            $affected = $this->orderManager->finishOrder($id, $volume ? $volume : 0);
-        } catch (InvalidArgumentException $e) {
-            if (!$this->isAjax()) {
-                $this->flashMessage($e->getMessage(), 'danger');
-            }
-
-            return;
-        }
-
-        $order = $this->orderManager->find($id);
-        $this->notificationMailer
-            ->addTo($this->settings->get('faktura.uctarna'))
-            ->setTemplateFile('invoice.latte')
-            ->setSubject('Faktura')
-            ->setTemplateVar('order', $order)
-            ->send();
-
-        if (!$this->isAjax()) {
-            if ($affected == 0) {
-                $this->flashMessage("Objednávka č. $id neexistuje nebo byla stornovaná či je již dokončená.", 'danger');
-            } else {
-                $this->flashMessage('Objednávka byla dokončena.', 'success');
-            }
-
-            $this->redirect('this');
-        }
-    }
-
-    /**
      * @param int $id
      */
     function handleSeen($id)

@@ -108,22 +108,18 @@ class OrderManager extends Object
 
     /**
      * @param int $id
-     * @param float|int $returned_volume
      * @return int
      */
-    function finishOrder($id, $returned_volume = 0)
+    function finishNitrogenOrder($id)
     {
-        $objem = $this->order($id)->fetch()->objem;
-        if ($objem < $returned_volume) throw new InvalidArgumentException('Vrácený objem nemůže být větší než objem v objednávce.');
-
         return $this->order($id)
             ->where('objednavky_stav_id IN (?)', [
                 self::ORDER_STATUS_COMPLETED,
+                self::ORDER_STATUS_CONFIRMED,
                 self::ORDER_STATUS_PENDING
             ])
             ->update([
                 'objednavky_stav_id' => self::ORDER_STATUS_FINISHED,
-                'objem_vraceno' => $returned_volume,
                 'dokonceno' => new DateTime()
             ]);
     }
@@ -133,7 +129,7 @@ class OrderManager extends Object
      * @param float|int $returned_weight
      * @return int
      */
-    function finishCompletedOrder($id, $returned_weight = 0)
+    function finishHeliumOrder($id, $returned_weight)
     {
         $returned_volume = $returned_weight * self::HELIUM_LITERS_IN_KG;
 
@@ -241,6 +237,7 @@ class OrderManager extends Object
             objednavky.jmeno AS jmeno, 
             objednavky.dph AS dph,
             objednavky.objednavky_stav_id AS stav_id,
+            objednavky.produkty_id,
             ceny.cena AS cena,
             (cena * objem) AS cena_celkem,
             (cena * objem + cena * objem * objednavky.dph/100) AS cena_celkem_dph,
