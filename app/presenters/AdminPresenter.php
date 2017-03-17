@@ -10,6 +10,7 @@ use App\Model\OrderManager;
 use App\Model\PriceManager;
 use App\Model\Settings;
 use App\Model\SmtpMailer;
+use App\Model\UserManager;
 use Libs\BootstrapForm;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
@@ -119,6 +120,11 @@ class AdminPresenter extends BasePresenter
                 $this->redirect('default');
             }
         }
+    }
+
+    function actionSettings()
+    {
+        if (!$this->user->isInRole(UserManager::ROLE_ADMIN)) $this->error();
     }
 
     /**
