@@ -266,7 +266,7 @@ class OrdersGridControl extends Control
             }
         }
 
-        $this->presenter->redirect('this');
+        $this->redirect('detail!', $id);
     }
 
     /**

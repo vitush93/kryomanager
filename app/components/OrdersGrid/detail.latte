@@ -85,13 +85,13 @@
             <a href="{link confirm! $o->id}" class="btn btn-warning"><i class="fa fa-envelope"></i> potvrdit objednávku</a>
         {/if}
         {if $stav == 2}
-            <a href="{plink Admin:complete 'id' => $o->id, 'ref' => $this->presenter->name.':'.$this->presenter->action}" class="btn btn-success"><i class="fa fa-check"></i> vyřídit objednávku</a>
+            <a href="{plink Admin:complete $o->id}" class="btn btn-success"><i class="fa fa-check"></i> vyřídit objednávku</a>
         {/if}
         {if $stav == 1 || $stav == 2}
-            <a href="{plink Admin:cancel 'id' => $o->id, 'ref' => $this->presenter->name.':'.$this->presenter->action}" class="btn btn-danger"><i class="fa fa-times"></i> stornovat objednávku</a>
+            <a href="{plink Admin:cancel $o->id}" class="btn btn-danger"><i class="fa fa-times"></i> stornovat objednávku</a>
         {/if}
         {if $stav == 4}
-            <a href="{plink Admin:finish 'id' => $o->id, 'ref' => $this->presenter->name.':'.$this->presenter->action}" class="btn btn-info"><i class="fa fa-list"></i> dokončit objednávku</a>
+            <a href="{plink Admin:finish $o->id}" class="btn btn-info"><i class="fa fa-list"></i> dokončit objednávku</a>
         {/if}
     </div>
 </div>

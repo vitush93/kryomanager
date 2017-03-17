@@ -58,13 +58,19 @@ class AdminPresenter extends BasePresenter
 
         $this->template->order = $order;
 
-        $this['heliumOrderForm']->onSuccess[] = function (Form $form, $values) {
+        $this['heliumOrderForm']->onSuccess[] = function (Form $form, $values) use ($order) {
             $id = $this->getParameter('id');
 
             $this->orderManager->finishHeliumOrder($id, $values->weight);
             $this->flashMessage('Objednávka byla dokončena.', 'success');
 
-            $this->redirect($values->ref);
+            if ($values->ref) {
+                $this->redirect($values->ref);
+            } else {
+                $backlink = "/kryo/orders?ordersGrid-id={$order->id}&do=ordersGrid-detail";
+                $backlink = $this->appendFlashMessage($backlink);
+                $this->redirectUrl($backlink);
+            }
         };
     }
 
@@ -77,7 +83,14 @@ class AdminPresenter extends BasePresenter
 
         $this->flashMessage('Objednávka byla dokončena.', 'success');
 
-        $this->redirect($this->getParameter('ref'));
+        $ref = $this->getParameter('ref');
+        if ($ref) {
+            $this->redirect($ref);
+        } else {
+            $backlink = "/kryo/orders?ordersGrid-id={$order->id}&do=ordersGrid-detail";
+            $backlink = $this->appendFlashMessage($backlink);
+            $this->redirectUrl($backlink);
+        }
     }
 
     /**
@@ -117,7 +130,10 @@ class AdminPresenter extends BasePresenter
             if ($ref) {
                 $this->redirect($ref);
             } else {
-                $this->redirect('default');
+                $backlink = "/kryo/orders?ordersGrid-id={$id}&do=ordersGrid-detail";
+                $backlink = $this->appendFlashMessage($backlink);
+
+                $this->redirectUrl($backlink);
             }
         }
     }
@@ -163,7 +179,9 @@ class AdminPresenter extends BasePresenter
             if ($ref) {
                 $this->redirect($ref);
             } else {
-                $this->redirect('default');
+                $backlink = "/kryo/orders?ordersGrid-id={$id}&do=ordersGrid-detail";
+                $backlink = $this->appendFlashMessage($backlink);
+                $this->redirectUrl($backlink);
             }
         }
     }
@@ -388,7 +406,14 @@ class AdminPresenter extends BasePresenter
             $this->orderManager->completeHeliumOrder($id, $values->weight);
 
             $this->flashMessage('Objednávka byla vyřízena.', 'success');
-            $this->redirect($values->ref);
+
+            if ($values->ref) {
+                $this->redirect($values->ref);
+            } else {
+                $backlink = "/kryo/orders?ordersGrid-id={$id}&do=ordersGrid-detail";
+                $backlink = $this->appendFlashMessage($backlink);
+                $this->redirectUrl($backlink);
+            }
         };
 
         return BootstrapForm::makeBootstrap($form);

@@ -24,4 +24,16 @@ abstract class BasePresenter extends Presenter
             $this->redirect('Sign:default');
         }
     }
+
+    /**
+     * @param $referer
+     * @return string
+     */
+    protected function appendFlashMessage($referer)
+    {
+        $referer .= (parse_url($referer, PHP_URL_QUERY) ? '&' : '?') . '_fid=';
+        $referer .= $this->getParameter(self::FLASH_KEY);
+
+        return $referer;
+    }
 }
