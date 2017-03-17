@@ -172,6 +172,21 @@ class OrderManager extends Object
 
     /**
      * @param int $id
+     * @param float $weight
+     * @return int
+     */
+    function completeHeliumOrder($id, $weight)
+    {
+        return $this->order($id)
+            ->update([
+                'objednavky_stav_id' => self::ORDER_STATUS_COMPLETED,
+                'vyrizeno' => new DateTime(),
+                'vaha' => $weight
+            ]);
+    }
+
+    /**
+     * @param int $id
      * @return int
      */
     function confirmPendingOrder($id)

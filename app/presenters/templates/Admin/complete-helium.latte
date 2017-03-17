@@ -1,0 +1,24 @@
+{block content}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    Vyřídit objednávku #{$order->id}
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4">
+                            <p class="help-block">
+                                K vyřízení objednávky je třeba zadat hmotnost nádoby:
+                            </p>
+                            <br>
+                            {control completeHeliumOrderForm}
+                        </div>
+                        <div class="col-md-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{/block}

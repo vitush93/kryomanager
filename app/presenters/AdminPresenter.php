@@ -61,6 +61,9 @@ class AdminPresenter extends BasePresenter
             $id = $this->getParameter('id');
 
             $this->orderManager->finishHeliumOrder($id, $values->weight);
+            $this->flashMessage('Objednávka byla dokončena.', 'success');
+
+            $this->redirect($values->ref);
         };
     }
 
@@ -97,31 +100,14 @@ class AdminPresenter extends BasePresenter
         $order = $this->orderManager->find($id);
 
         if ($order->produkty_id == OrderManager::PRODUCT_HELIUM) {
-            // TODO enter initial weight for helium
+            $this->setView('complete-helium');
+            $this->template->order = $order;
+
+            return;
         }
 
-        $previousOrderStatus = $order->objednavky_stav_id;
-        $affected = $this->orderManager->completeConfirmedOrder($id);
-
-        if ($affected > 0) {
-            try {
-                $this->notificationMailer
-                    ->addTo($order->uzivatele->email)
-                    ->setTemplateFile('notification.latte')
-                    ->setSubject('Objednávka byla vyřízena!')
-                    ->setTemplateVar('order', $order)
-                    ->send();
-
-                if (!$this->isAjax()) {
-                    $this->flashMessage('Objednávka byla vyřízena.', 'success');
-                }
-            } catch (SmtpException $exception) {
-                $this->flashMessage('E-mail se nepodařilo odeslat.', 'danger');
-
-                // rollback order status
-                $this->orderManager->setStatus($id, $previousOrderStatus);
-            }
-        }
+        $this->orderManager->completeConfirmedOrder($id);
+        $this->flashMessage('Objednávka byla vyřízena.', 'success');
 
         if (!$this->isAjax()) {
             $ref = $this->getParameter('ref');
@@ -344,6 +330,7 @@ class AdminPresenter extends BasePresenter
         $form->addText('weight', 'Váha po vrácení (kg)')
             ->addRule(Form::FLOAT, 'Zadejte platné číslo.')
             ->setRequired(FORM_REQUIRED);
+        $form->addHidden('ref', $this->getParameter('ref'));
         $form->addSubmit('process', 'Dokončit');;
 
         return BootstrapForm::makeBootstrap($form);
@@ -371,5 +358,31 @@ class AdminPresenter extends BasePresenter
         $grid->setModel($this->orderManager->getOrders());
 
         return $grid;
+    }
+
+    /**
+     * @return Form
+     */
+    protected function createComponentCompleteHeliumOrderForm()
+    {
+        $form = new Form();
+
+        $form->addText('weight', 'Váha (kg)')
+            ->addRule(Form::FLOAT, 'Zadejte platné číslo.')
+            ->setRequired(FORM_REQUIRED)
+            ->setOption('description', 'Váha při predání.');
+        $form->addHidden('ref', $this->getParameter('ref'));
+        $form->addSubmit('process', 'Vyřídit objednávku');
+
+        $form->onSuccess[] = function (Form $form, $values) {
+            $id = $this->getParameter('id');
+
+            $this->orderManager->completeHeliumOrder($id, $values->weight);
+
+            $this->flashMessage('Objednávka byla vyřízena.', 'success');
+            $this->redirect($values->ref);
+        };
+
+        return BootstrapForm::makeBootstrap($form);
     }
 }
