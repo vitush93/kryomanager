@@ -73,6 +73,10 @@ class AdminPresenter extends BasePresenter
     private function finishNitrogenOrder($order)
     {
         $this->orderManager->finishNitrogenOrder($order->id);
+
+        $this->flashMessage('Objednávka byla dokončena.', 'success');
+
+        $this->redirect($this->getParameter('ref'));
     }
 
     /**
@@ -83,8 +87,6 @@ class AdminPresenter extends BasePresenter
         $order = $this->orderManager->find($id);
         if ($order->produkty_id == OrderManager::PRODUCT_NITROGEN) {
             $this->finishNitrogenOrder($order);
-
-            $this->redirect($this->getParameter('ref'));
         } else if ($order->produkty_id == OrderManager::PRODUCT_HELIUM) {
             $this->finishHeliumOrder($order);
         }
